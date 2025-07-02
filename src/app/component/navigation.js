@@ -20,7 +20,7 @@ export default function Navigation() {
       </div>
 
       {/* 🔸 Navbar */}
-      <nav className="navbar navbar-expand-lg cyber-navbar shadow px-3 py-2 rounded-4 border border-cyber">
+      <nav className="navbar navbar-expand-lg cyber-navbar shadow px-3 py-2 rounded-4">
         <div className="container-fluid">
           {/* โลโก้ + แบรนด์ */}
           <Link className="navbar-brand d-flex align-items-center gap-2" href="/">
@@ -31,7 +31,7 @@ export default function Navigation() {
                 fill
                 sizes="80px"
                 className="rounded-circle"
-                style={{ objectFit: 'contain', maxWidth: '100%' }}
+                style={{ objectFit: 'contain' }}
               />
             </div>
             <span className="brand-text-glow d-none d-md-inline">ARENA OF VALOR</span>
@@ -67,7 +67,6 @@ export default function Navigation() {
 
       {/* 🎨 Style */}
       <style jsx>{`
-        /* 🔹 วิดีโอพื้นหลัง */
         .video-bg-wrapper {
           position: fixed;
           inset: 0;
@@ -88,13 +87,11 @@ export default function Navigation() {
           background: rgba(0, 0, 0, 0.3);
         }
 
-        /* 🔸 Navbar */
         .cyber-navbar {
           background-color: rgba(0, 25, 75, 0.8);
           backdrop-filter: blur(10px);
           font-family: 'Audiowide', sans-serif;
           z-index: 10;
-          border-color: #004080;
         }
 
         .logo-wrapper {
@@ -120,7 +117,6 @@ export default function Navigation() {
             0 0 20px #9933ff;
         }
 
-        /* ★ ลิงก์เมนูแบบ Neon Glow + Animation */
         .cyber-link {
           position: relative;
           color: #ffffff !important;
@@ -130,9 +126,8 @@ export default function Navigation() {
           font-weight: 700;
           padding: 0.4rem 0.8rem;
           transition: color 0.3s ease, text-shadow 0.3s ease;
-          cursor: pointer;
-          user-select: none;
         }
+
         .cyber-link::before {
           content: '';
           position: absolute;
@@ -146,18 +141,21 @@ export default function Navigation() {
           filter: drop-shadow(0 0 6px #00ffff);
           transform: translateX(-50%);
         }
+
         .cyber-link:hover {
           color: #00ffff !important;
           text-shadow:
             0 0 8px #00ffff,
             0 0 12px #33ccff,
             0 0 20px #66ffff;
+          animation: glowPulse 1.5s infinite alternate;
         }
+
         .cyber-link:hover::before {
           width: 100%;
           left: 0;
         }
-        /* เพิ่มจังหวะ "glow" อ่อนๆ */
+
         @keyframes glowPulse {
           0%, 100% {
             text-shadow:
@@ -172,12 +170,9 @@ export default function Navigation() {
               0 0 40px #66ffff;
           }
         }
-        .cyber-link:hover {
-          animation: glowPulse 1.5s infinite alternate;
-        }
       `}</style>
 
-      {/* 🔤 ฟอนต์จาก Google Fonts */}
+      {/* Google Font */}
       <link
         href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap"
         rel="stylesheet"

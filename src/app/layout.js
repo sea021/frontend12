@@ -1,11 +1,7 @@
-'use client';
 import { Geist, Geist_Mono } from "next/font/google";
-import React, { useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Navigation from './component/navigation';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,10 +14,6 @@ const geistMono = Geist_Mono({
 });
 
 export default function RootLayout({ children }) {
-  useEffect(() => {
-    import('bootstrap/dist/js/bootstrap.bundle.min.js');
-  }, []);
-
   return (
     <html lang="en">
       <body>
