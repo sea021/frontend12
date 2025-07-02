@@ -9,10 +9,10 @@ export default function Footer() {
         <div className="row">
           <div className="col-lg-4 col-md-6 mb-4 mb-lg-0">
             <Link href="/" className="d-inline-block mb-3">
-                <Image src="/images/logo.png" alt="Logo" width={150} height={60} />
+                <Image src="/images/logo_rov.png" alt="Logo" width={160} height={160} />
             </Link>
             <p className="text-muted">
-              Discover a world of expressions. Your one-stop destination for unique and fun face assets.
+            
             </p>
           </div>
 
@@ -22,11 +22,11 @@ export default function Footer() {
               <li className="mb-2">
                 <Link href="/" className="text-muted text-decoration-none">Home</Link>
               </li>
-              <li className="mb-2">
-                <Link href="/service" className="text-muted text-decoration-none">Service</Link>
+               <li className="mb-2">
+                <Link href="/about" className="text-muted text-decoration-none">About</Link>
               </li>
               <li className="mb-2">
-                <Link href="/about" className="text-muted text-decoration-none">About</Link>
+                <Link href="/service" className="text-muted text-decoration-none">Service</Link>
               </li>
               <li className="mb-2">
                 <Link href="/contact" className="text-muted text-decoration-none">Contact</Link>
@@ -40,14 +40,12 @@ export default function Footer() {
               <a href="#" className="text-muted me-3 text-decoration-none fs-4">
                 <i className="bi bi-facebook"></i>
               </a>
-              <a href="#" className="text-muted me-3 text-decoration-none fs-4">
-                <i className="bi bi-twitter"></i>
-              </a>
+             
               <a href="#" className="text-muted me-3 text-decoration-none fs-4">
                 <i className="bi bi-instagram"></i>
               </a>
               <a href="#" className="text-muted text-decoration-none fs-4">
-                <i className="bi bi-linkedin"></i>
+                <i className="bi bi-google"></i>
               </a>
             </div>
           </div>
@@ -65,7 +63,7 @@ export default function Footer() {
         </div>
 
         <div className="border-top pt-4 mt-5">
-          <p className="text-center text-muted mb-0">© 2025 Company, Inc. All rights reserved.</p>
+          <p className="text-center text-muted mb-0">© 2015 TencenT Games Inc. All rights reserved.</p>
         </div>
       </div>
     </footer>
