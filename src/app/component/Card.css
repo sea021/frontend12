@@ -1,0 +1,13 @@
+.custom-btn {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  border-radius: 0.5rem;
+  color: #000 !important;
+  background-color: #ffc107 !important;
+  border: none;
+}
+
+.custom-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0.8rem 1.5rem rgba(255, 193, 7, 0.5);
+  background-color: #ffca2c !important;
+}

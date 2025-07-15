@@ -18,7 +18,7 @@ export default function Home() {
 
       <Carousel />
 
-      <h1 className="cyber-gold-title">Learn more</h1>
+      <h1 className="cyber-gold-title">Interesting news</h1>
 
       {/* Style สำหรับหัวข้อใหญ่ Learn more */}
       <style jsx>{`
