@@ -3,11 +3,14 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function Navigation() {
   useEffect(() => {
     import('bootstrap/dist/js/bootstrap.bundle.min.js');
   }, []);
+
+  const pathname = usePathname();
 
   return (
     <>
@@ -20,9 +23,8 @@ export default function Navigation() {
       </div>
 
       {/* 🔸 Navbar */}
-      <nav className="navbar navbar-expand-lg cyber-navbar shadow px-3 py-2 rounded-4">
+      <nav className="navbar navbar-expand-lg cyber-navbar animated-navbar shadow px-3 py-2 rounded-4">
         <div className="container-fluid">
-          {/* โลโก้ + แบรนด์ */}
           <Link className="navbar-brand d-flex align-items-center gap-2" href="/">
             <div className="logo-wrapper">
               <Image
@@ -30,7 +32,7 @@ export default function Navigation() {
                 alt="Logo"
                 fill
                 sizes="80px"
-                className="rounded-circle"
+                className="rounded-circle logo-image"
                 style={{ objectFit: 'contain' }}
               />
             </div>
@@ -49,17 +51,22 @@ export default function Navigation() {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-3">
               <li className="nav-item">
-                <Link className="nav-link cyber-link" href="/">Home</Link>
+                <Link className="btn btn-cyber text-white" href="/">Home</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link cyber-link" href="/about">About</Link>
+                <Link className="btn btn-cyber text-white" href="/about">About</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link cyber-link" href="/service">Services</Link>
+                <Link className="btn btn-cyber text-white" href="/service">Services</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link cyber-link" href="/contact">Contact</Link>
+                <Link className="btn btn-cyber text-white" href="/contact">Contact</Link>
               </li>
+              {pathname === '/' && (
+                <li className="nav-item">
+                  <Link href="/Login" className="btn btn-login-glow text-white">Login</Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -88,16 +95,31 @@ export default function Navigation() {
         }
 
         .cyber-navbar {
-          background-color: rgba(0, 25, 75, 0.8);
+          background-color: rgba(20, 0, 40, 0.85);
           backdrop-filter: blur(10px);
           font-family: 'Audiowide', sans-serif;
-          z-index: 10;
+          border-bottom: 2px solid #cc66ff;
+          box-shadow: 0 0 25px #cc66ff;
+          animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: translateY(-20px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
 
         .logo-wrapper {
           position: relative;
           width: 64px;
           height: 64px;
+        }
+
+        .logo-image {
+          transition: transform 0.6s ease;
+        }
+
+        .logo-image:hover {
+          transform: rotate(360deg) scale(1.1);
         }
 
         @media (min-width: 768px) {
@@ -111,64 +133,76 @@ export default function Navigation() {
           font-size: 1.5rem;
           font-weight: 700;
           color: #ff66cc;
-          text-shadow:
-            0 0 6px #ff66cc,
-            0 0 12px #cc33ff,
-            0 0 20px #9933ff;
-        }
-
-        .cyber-link {
-          position: relative;
-          color: #ffffff !important;
-          text-transform: uppercase;
-          letter-spacing: 1.5px;
-          font-size: 1.4rem;
-          font-weight: 700;
-          padding: 0.4rem 0.8rem;
-          transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-
-        .cyber-link::before {
-          content: '';
-          position: absolute;
-          left: 50%;
-          bottom: 0;
-          width: 0;
-          height: 3px;
-          background: #00ffff;
-          border-radius: 2px;
-          transition: width 0.4s ease, left 0.4s ease;
-          filter: drop-shadow(0 0 6px #00ffff);
-          transform: translateX(-50%);
-        }
-
-        .cyber-link:hover {
-          color: #00ffff !important;
-          text-shadow:
-            0 0 8px #00ffff,
-            0 0 12px #33ccff,
-            0 0 20px #66ffff;
-          animation: glowPulse 1.5s infinite alternate;
-        }
-
-        .cyber-link:hover::before {
-          width: 100%;
-          left: 0;
+          animation: glowPulse 2.5s infinite alternate;
+          text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff;
         }
 
         @keyframes glowPulse {
-          0%, 100% {
-            text-shadow:
-              0 0 6px #00ffff,
-              0 0 12px #33ccff,
-              0 0 20px #66ffff;
-          }
-          50% {
-            text-shadow:
-              0 0 12px #00ffff,
-              0 0 24px #33ccff,
-              0 0 40px #66ffff;
-          }
+          0% { text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff; }
+          100% { text-shadow: 0 0 20px #ff66ff, 0 0 30px #cc33ff; }
+        }
+
+        .btn-cyber {
+          background: linear-gradient(90deg, #cc33ff, #6600ff);
+          color: #fff !important;
+          font-weight: bold;
+          padding: 0.4rem 1.2rem;
+          border: none;
+          border-radius: 8px;
+          box-shadow: 0 0 10px #cc33ff;
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-size: 1rem;
+        }
+
+        .btn-cyber:hover {
+          background: linear-gradient(90deg, #ff33cc, #9933ff);
+          transform: scale(1.08) translateY(-2px);
+          box-shadow: 0 0 25px #ff66ff, 0 0 35px #cc33ff;
+          color: #fff;
+        }
+
+        .btn-login-glow {
+          position: relative;
+          background: transparent;
+          color: #ff66cc !important;
+          font-weight: 700;
+          padding: 0.4rem 1.2rem;
+          border: 2px solid #ff66cc;
+          border-radius: 8px;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          font-size: 1rem;
+          overflow: hidden;
+          z-index: 1;
+          box-shadow: 0 0 12px #ff66ff;
+        }
+
+        .btn-login-glow::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: conic-gradient(from 0deg, #ff66cc, #cc33ff, #9933ff, #ff66cc);
+          animation: rotateGlow 5s linear infinite;
+          z-index: -1;
+          filter: blur(12px);
+          opacity: 0.5;
+        }
+
+        .btn-login-glow:hover {
+          background: #ff66cc;
+          color: #fff !important;
+          transform: scale(1.1);
+          box-shadow: 0 0 25px #ff99ff, 0 0 40px #cc33ff, 0 0 60px #ff66cc;
+        }
+
+        @keyframes rotateGlow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
 
