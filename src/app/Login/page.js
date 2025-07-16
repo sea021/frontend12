@@ -1,20 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // จำลองดีเลย์เหมือนกำลังล็อกอิน
+    setTimeout(() => {
+      setLoading(false);
+      router.push('/dashboard'); // เปลี่ยน path ไปยังหน้า dashboard หรือหน้าอื่นที่ต้องการ
+    }, 1500);
+  };
+
   return (
     <>
       <div className="login-wrapper">
-        <form className="login-form">
+        <form className="login-form" onSubmit={handleSubmit}>
           <h2>Login</h2>
+
           <label htmlFor="email">Email</label>
           <input type="email" id="email" placeholder="Enter your email" required />
 
           <label htmlFor="password">Password</label>
           <input type="password" id="password" placeholder="Enter your password" required />
 
-          <button type="submit" className="btn-login">Sign In</button>
+          <button type="submit" className="btn-login" disabled={loading}>
+            {loading ? 'Signing In...' : 'Sign In'}
+          </button>
 
           <div className="login-links">
             <a href="/forgot-password" className="link">ลืมรหัสผ่าน?</a>
@@ -64,7 +82,6 @@ export default function Login() {
           text-align: left;
           color: #d9b3ff;
           margin-bottom: 0.3rem;
-          user-select: none;
         }
 
         input[type="email"],
@@ -78,6 +95,7 @@ export default function Login() {
           transition: border-color 0.3s;
           outline: none;
         }
+
         input[type="email"]:focus,
         input[type="password"]:focus {
           border-color: #ff66ff;
@@ -100,29 +118,34 @@ export default function Login() {
           box-shadow: 0 0 12px #cc33ff;
           transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
         }
+
         .btn-login:hover {
           background: linear-gradient(90deg, #ff33cc, #9933ff);
           box-shadow: 0 0 20px #ff33cc;
           transform: scale(1.05);
         }
 
+        .btn-login:disabled {
+          background: #888;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+
         .login-links {
           margin-top: 1rem;
           font-size: 0.9rem;
           color: #d9b3ff;
-          user-select: none;
           display: flex;
           justify-content: center;
           gap: 0.5rem;
-          align-items: center;
         }
 
         .login-links .link {
           color: #cc33ff;
           text-decoration: none;
-          cursor: pointer;
           transition: color 0.3s;
         }
+
         .login-links .link:hover {
           color: #ff66ff;
           text-decoration: underline;

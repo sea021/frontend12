@@ -62,11 +62,11 @@ export default function Navigation() {
               <li className="nav-item">
                 <Link className="btn btn-cyber text-white" href="/contact">Contact</Link>
               </li>
-              {pathname === '/' && (
+              
                 <li className="nav-item">
                   <Link href="/Login" className="btn btn-login-glow text-white">Login</Link>
                 </li>
-              )}
+           
             </ul>
           </div>
         </div>
