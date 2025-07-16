@@ -5,7 +5,7 @@ import React from 'react';
 export default function Contact() {
   return (
     <>
-      <div className="contact-wrapper container py-5">
+      <div className="contact-wrapper container py-5 fade-up">
         <div className="row text-center pb-4">
           <div className="col-lg-8 mx-auto">
             <h1 className="contact-title">Contact Us</h1>
@@ -17,7 +17,7 @@ export default function Contact() {
 
         <div className="row">
           <div className="col-lg-8 mx-auto">
-            <form className="contact-form">
+            <form className="contact-form fade-up delay-1">
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">Name</label>
                 <input type="text" className="form-control custom-input" id="name" required />
@@ -35,15 +35,15 @@ export default function Contact() {
           </div>
         </div>
 
-        <div className="row text-center pt-5">
+        <div className="row text-center pt-5 fade-up delay-2">
           <div className="col-lg-8 mx-auto">
             <h5 className="text-muted text-white">You can also reach us at:</h5>
             <p className="text-muted text-white">rov.in.th</p>
-            
           </div>
         </div>
       </div>
 
+      {/* 🎨 Style */}
       <style jsx>{`
         .contact-wrapper {
           background: rgba(15, 0, 30, 0.95);
@@ -108,8 +108,31 @@ export default function Contact() {
           0% { text-shadow: 0 0 10px #ff66cc, 0 0 20px #9933ff; }
           100% { text-shadow: 0 0 25px #ff66ff, 0 0 35px #cc33ff; }
         }
+
+        /* ✅ Smooth fade-up animation */
+        .fade-up {
+          opacity: 0;
+          transform: translateY(30px);
+          animation: fadeUp 1s ease-out forwards;
+        }
+
+        .delay-1 {
+          animation-delay: 0.4s;
+        }
+
+        .delay-2 {
+          animation-delay: 0.8s;
+        }
+
+        @keyframes fadeUp {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
       `}</style>
 
+      {/* Google Font */}
       <link
         href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap"
         rel="stylesheet"

@@ -6,29 +6,33 @@ import { useRouter } from 'next/navigation';
 export default function Login() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [animateOut, setAnimateOut] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    setAnimateOut(true); // เริ่ม animation ออก
 
-    // จำลองดีเลย์เหมือนกำลังล็อกอิน
+    // รอ animation 600ms แล้วค่อยเปลี่ยนหน้า
     setTimeout(() => {
-      setLoading(false);
-      router.push('/dashboard'); // เปลี่ยน path ไปยังหน้า dashboard หรือหน้าอื่นที่ต้องการ
-    }, 1500);
+      router.push('/dashboard');
+    }, 600);
   };
 
   return (
     <>
       <div className="login-wrapper">
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form
+          className={`login-form ${animateOut ? 'fade-float-out' : ''}`}
+          onSubmit={handleSubmit}
+        >
           <h2>Login</h2>
 
           <label htmlFor="email">Email</label>
-          <input type="email" id="email" placeholder="Enter your email" required />
+          <input type="email" id="email" placeholder="Enter your email" required disabled={loading} />
 
           <label htmlFor="password">Password</label>
-          <input type="password" id="password" placeholder="Enter your password" required />
+          <input type="password" id="password" placeholder="Enter your password" required disabled={loading} />
 
           <button type="submit" className="btn-login" disabled={loading}>
             {loading ? 'Signing In...' : 'Sign In'}
@@ -67,6 +71,13 @@ export default function Login() {
           flex-direction: column;
           gap: 1.2rem;
           text-align: center;
+          transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        /* animation fade + float up */
+        .fade-float-out {
+          opacity: 0;
+          transform: translateY(-30px);
         }
 
         .login-form h2 {

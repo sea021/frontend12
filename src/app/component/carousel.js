@@ -5,11 +5,32 @@ export default function Carousel() {
   return (
     <>
       <div className="bg-light p-3 rounded-5 shadow-sm position-relative border border-gray">
-        <div id="carouselExampleFade" className="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div
+          id="carouselExampleFade"
+          className="carousel slide carousel-fade"
+          data-bs-ride="carousel"
+        >
           <div className="carousel-indicators custom-indicators">
-            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button
+              type="button"
+              data-bs-target="#carouselExampleFade"
+              data-bs-slide-to="0"
+              className="active"
+              aria-current="true"
+              aria-label="Slide 1"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#carouselExampleFade"
+              data-bs-slide-to="1"
+              aria-label="Slide 2"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#carouselExampleFade"
+              data-bs-slide-to="2"
+              aria-label="Slide 3"
+            ></button>
           </div>
 
           <div className="carousel-inner rounded-4">
@@ -94,17 +115,43 @@ export default function Carousel() {
         .carousel-inner {
           position: relative;
           width: 100%;
-          padding-top: 56.25%; /* อัตราส่วน 16:9 */
+          padding-top: 56.25%; /* 16:9 */
           overflow: hidden;
         }
         .carousel-item {
           position: absolute;
-          top: 0; left: 0; right: 0; bottom: 0;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
 
           display: flex;
-          align-items: center;     /* จัดกลางแนวตั้ง */
-          justify-content: center; /* จัดกลางแนวนอน */
+          align-items: center;
+          justify-content: center;
           overflow: hidden;
+
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.6s ease, transform 0.6s ease;
+          z-index: 0;
+        }
+
+        .carousel-item.active {
+          opacity: 1;
+          transform: translateY(0);
+          z-index: 1;
+          animation: fadeFloatUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeFloatUp {
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         /* ไข่ปลา (carousel indicators) */
@@ -116,6 +163,7 @@ export default function Carousel() {
           border: 2px solid #fff;
           transition: background-color 0.3s ease;
           margin: 0 6px;
+          cursor: pointer;
         }
         .custom-indicators button.active {
           background-color: #007bff;
@@ -137,6 +185,8 @@ export default function Carousel() {
           box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.7);
           transition: background-color 0.3s ease, box-shadow 0.3s ease;
           cursor: pointer;
+          position: absolute;
+          z-index: 10;
         }
         .custom-control:hover {
           background-color: #00ffff;
