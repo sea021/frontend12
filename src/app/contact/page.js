@@ -4,13 +4,13 @@ import React from 'react';
 
 export default function Contact() {
   return (
-    <>
+    <>  
       <div className="contact-wrapper container py-5 fade-up">
         <div className="row text-center pb-4">
           <div className="col-lg-8 mx-auto">
             <h1 className="contact-title">Contact Us</h1>
             <p className="text-desc">
-              We'd love to hear from you! Fill out the form below to get in touch.
+              We&apos;d love to hear from you! Fill out the form below to get in touch.
             </p>
           </div>
         </div>
