@@ -6,7 +6,26 @@ import Image from 'next/image';
 
 export default function Navigation() {
   useEffect(() => {
-    import('bootstrap/dist/js/bootstrap.bundle.min.js');
+    import('bootstrap/dist/js/bootstrap.bundle.min.js').then(({ default: bootstrap }) => {
+      // หุบ Navbar เมื่อคลิกลิงก์
+      const navLinks = document.querySelectorAll('.navbar-nav .nav-item .btn');
+      const collapseEl = document.getElementById('navbarSupportedContent');
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          const bsCollapse = bootstrap.Collapse.getInstance(collapseEl);
+          if (bsCollapse && collapseEl.classList.contains('show')) {
+            bsCollapse.hide();
+          }
+        });
+      });
+
+      return () => {
+        navLinks.forEach(link => {
+          link.removeEventListener('click', () => {});
+        });
+      };
+    });
   }, []);
 
   return (
