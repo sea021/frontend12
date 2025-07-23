@@ -1,7 +1,12 @@
 'use client';
+import { useEffect } from 'react';
 import Image from 'next/image';
 
 export default function Carousel() {
+  useEffect(() => {
+    import('bootstrap/dist/js/bootstrap.bundle.min.js');
+  }, []);
+
   return (
     <>
       <div className="bg-light p-3 rounded-5 shadow-sm position-relative border border-gray">
@@ -39,6 +44,7 @@ export default function Carousel() {
                 src="/images/slider111.png"
                 alt="Slide 1"
                 fill
+                priority
                 style={{ objectFit: 'cover' }}
                 sizes="100vw"
               />
@@ -124,12 +130,10 @@ export default function Carousel() {
           left: 0;
           right: 0;
           bottom: 0;
-
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-
           opacity: 0;
           transform: translateY(20px);
           transition: opacity 0.6s ease, transform 0.6s ease;
@@ -154,7 +158,6 @@ export default function Carousel() {
           }
         }
 
-        /* ไข่ปลา (carousel indicators) */
         .custom-indicators button {
           width: 14px;
           height: 14px;
@@ -170,7 +173,6 @@ export default function Carousel() {
           border-color: #007bff;
         }
 
-        /* ลูกศรควบคุมแบบกลม */
         .custom-control {
           width: 48px;
           height: 48px;
@@ -199,7 +201,6 @@ export default function Carousel() {
           right: 10px;
         }
 
-        /* svg ลูกศร */
         .arrow-icon {
           stroke: #00ffff;
           filter: drop-shadow(0 0 4px #00ffff);

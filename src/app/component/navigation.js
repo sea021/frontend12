@@ -3,26 +3,23 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 
 export default function Navigation() {
   useEffect(() => {
     import('bootstrap/dist/js/bootstrap.bundle.min.js');
   }, []);
 
-  const pathname = usePathname();
-
   return (
     <>
-      {/* 🔹 วิดีโอพื้นหลัง */}
+      {/* วิดีโอพื้นหลัง */}
       <div className="video-bg-wrapper">
-        <video autoPlay muted loop playsInline className="video-bg">
+        <video autoPlay muted loop playsInline preload="auto" className="video-bg">
           <source src="/video/Violet.mp4" type="video/mp4" />
         </video>
         <div className="video-overlay" />
       </div>
 
-      {/* 🔸 Navbar */}
+      {/* Navbar */}
       <nav className="navbar navbar-expand-lg cyber-navbar animated-navbar shadow px-3 py-2 rounded-4">
         <div className="container-fluid">
           <Link className="navbar-brand d-flex align-items-center gap-2" href="/">
@@ -44,6 +41,9 @@ export default function Navigation() {
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -62,17 +62,15 @@ export default function Navigation() {
               <li className="nav-item">
                 <Link className="btn btn-cyber text-white" href="/contact">Contact</Link>
               </li>
-              
-                <li className="nav-item">
-                  <Link href="/Login" className="btn btn-login-glow text-white">Login</Link>
-                </li>
-           
+              <li className="nav-item">
+                <Link href="/Login" className="btn btn-login-glow text-white">Login</Link>
+              </li>
             </ul>
           </div>
         </div>
       </nav>
 
-      {/* 🎨 Style */}
+      {/* Style */}
       <style jsx>{`
         .video-bg-wrapper {
           position: fixed;
@@ -86,6 +84,7 @@ export default function Navigation() {
           height: 100%;
           object-fit: cover;
           filter: brightness(0.35) contrast(1.4) saturate(1.8);
+          display: block;
         }
 
         .video-overlay {

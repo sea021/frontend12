@@ -19,6 +19,7 @@ export default function About() {
             href="https://apps.apple.com/th/app/garena-rov-super-rov-day/id1150337432"
             target="_blank"
             rel="noopener noreferrer"
+            className="store-button"
           >
             <Image
               src="/images/ios.png"
@@ -26,12 +27,14 @@ export default function About() {
               width={160}
               height={50}
               className="store-img"
+              priority
             />
           </a>
           <a
             href="https://play.google.com/store/apps/details?id=com.garena.game.kgth&hl=th"
             target="_blank"
             rel="noopener noreferrer"
+            className="store-button"
           >
             <Image
               src="/images/android.png"
@@ -39,6 +42,7 @@ export default function About() {
               width={160}
               height={50}
               className="store-img"
+              priority
             />
           </a>
         </div>
@@ -53,6 +57,7 @@ export default function About() {
               width={160}
               height={160}
               className="qr-img"
+              priority
             />
             <p className="qr-text">
               สแกนด้วยกล้องมือถือของคุณ<br />
@@ -112,15 +117,30 @@ export default function About() {
           flex-wrap: wrap;
         }
 
+        .store-button {
+          display: inline-block;
+          cursor: pointer;
+          user-select: none;
+          outline: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+
         .store-img {
           border-radius: 10px;
           box-shadow: 0 0 14px #cc33ff;
           transition: transform 0.3s, box-shadow 0.3s;
+          display: block;
         }
 
         .store-img:hover {
           transform: scale(1.07);
           box-shadow: 0 0 25px #ff66ff, 0 0 35px #cc33ff;
+        }
+
+        /* Feedback ตอนกด */
+        .store-button:active .store-img {
+          transform: scale(0.95);
+          transition: transform 0.1s;
         }
 
         .qr-section {

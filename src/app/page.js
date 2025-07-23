@@ -1,9 +1,13 @@
 'use client';
-import Carousel from './component/carousel';
-import Card from './component/card';
-import Footer from './component/footer';
+
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import React from 'react';
+
+// โหลด component แบบ dynamic เพื่อลด bundle size และเรนเดอร์หลัง client เท่านั้น
+const Carousel = dynamic(() => import('./component/carousel'), { ssr: false, loading: () => <p>Loading carousel...</p> });
+const Card = dynamic(() => import('./component/card'), { ssr: false });
+const Footer = dynamic(() => import('./component/footer'));
 
 export default function Home() {
   return (
@@ -18,7 +22,21 @@ export default function Home() {
 
       <Carousel />
 
-      <h1 className="cyber-gold-title">Interesting news</h1>
+      <h1
+        className="cyber-gold-title"
+        tabIndex={0} // เพิ่ม keyboard focus
+        role="button" // ให้รู้ว่าเหมือนปุ่ม
+        onClick={() => {
+          alert('You clicked Interesting news!');
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            alert('You activated Interesting news!');
+          }
+        }}
+      >
+        Interesting news
+      </h1>
 
       {/* Style สำหรับหัวข้อใหญ่ Learn more */}
       <style jsx>{`
@@ -32,6 +50,7 @@ export default function Home() {
           display: block;
           margin: 3rem auto 2rem;
           padding-bottom: 1rem;
+          cursor: pointer;
 
           background: linear-gradient(90deg, #fff8dc, #ffd700, #ffcc00, #fff8dc);
           background-size: 400% auto;
@@ -44,9 +63,12 @@ export default function Home() {
             0 0 12px #ffa500,
             0 0 20px #ffea00,
             0 0 30px #ffcc00;
+          user-select: none;
+          transition: transform 0.15s ease;
+        }
 
-          /* ลบเส้นใต้ */
-          /* border-bottom: 2px solid rgba(255, 215, 0, 0.4); */
+        .cyber-gold-title:active {
+          transform: scale(0.95);
         }
 
         @keyframes shimmer {
