@@ -14,7 +14,7 @@ export default function Navigation() {
       {/* วิดีโอพื้นหลัง */}
       <div className="video-bg-wrapper">
         <video autoPlay muted loop playsInline preload="auto" className="video-bg">
-          <source src="/video/Violet.mp4" type="video/mp4" />
+          <source src="/video/Violet1.mp4" type="video/mp4" />
         </video>
         <div className="video-overlay" />
       </div>
