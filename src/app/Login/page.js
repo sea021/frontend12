@@ -48,28 +48,32 @@ export default function Login() {
 
       <style jsx>{`
         .login-wrapper {
-          min-height: 100vh;
+          width: 100vw;
+          height: 100vh;
           display: flex;
           justify-content: center;
           align-items: center;
-          background: rgba(20, 0, 40, 0.9);
+
           backdrop-filter: blur(8px);
           font-family: 'Audiowide', sans-serif;
+          padding: 2rem;
+          box-sizing: border-box;
         }
 
         .login-form {
           background: rgba(40, 0, 70, 0.85);
-          padding: 2.5rem 3rem;
-          border-radius: 12px;
+          padding: 3.5rem 4rem;
+          border-radius: 16px;
           box-shadow:
-            0 0 10px #cc33ff,
-            0 0 30px #9933ff,
-            inset 0 0 15px #ff66ff;
-          width: 320px;
+            0 0 15px #cc33ff,
+            0 0 40px #9933ff,
+            inset 0 0 20px #ff66ff;
+          width: 400px;
+          max-width: 100%;
           color: #fff;
           display: flex;
           flex-direction: column;
-          gap: 1.2rem;
+          gap: 1.5rem;
           text-align: center;
           transition: opacity 0.6s ease, transform 0.6s ease;
         }

@@ -1,14 +1,34 @@
 'use client';
 
 import React from 'react';
+import Swal from 'sweetalert2';
 
 export default function Register() {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    Swal.fire({
+      title: 'Drag me!',
+      icon: 'success',
+      draggable: true,
+      confirmButtonText: 'ตกลง',
+      background: '#1a002b',
+      color: '#ff66cc',
+      showClass: {
+        popup: 'swal2-show-cyberpunk',
+      },
+      hideClass: {
+        popup: 'swal2-hide-cyberpunk',
+      },
+    });
+  };
+
   return (
     <>
       <div className="register-wrapper">
         <h1 className="register-title">Create Your Account</h1>
 
-        <form className="register-form">
+        <form className="register-form" onSubmit={handleSubmit}>
           <select required>
             <option value="">-- คำนำหน้า --</option>
             <option value="mr">นาย</option>
@@ -46,52 +66,104 @@ export default function Register() {
       </div>
 
       <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+
         .register-wrapper {
           max-width: 540px;
           margin: 5rem auto;
           padding: 3rem 2rem;
-          background: #0c0c0f; /* สีดำเข้ม */
-          border-radius: 16px;
-          box-shadow: 0 0 30px #9900ff, inset 0 0 20px #330033;
-          font-family: 'Audiowide', sans-serif;
-          color: #fff;
+          background: linear-gradient(135deg, #1a001a, #2b003d);
+          border-radius: 20px;
+          box-shadow:
+            0 0 15px #ff33cc,
+            inset 0 0 40px #660066,
+            inset 0 0 80px #cc33ff;
+          font-family: 'Audiowide', monospace;
+          color: #ff66cc;
           text-align: center;
-          animation: fadeIn 1.5s ease;
+          position: relative;
+          overflow: hidden;
+          animation: fadeIn 1.5s ease forwards;
+          border: 2px solid #ff33cc;
+        }
+
+        /* Flicker Scanline */
+        .register-wrapper::before {
+          content: "";
+          pointer-events: none;
+          position: absolute;
+          inset: 0;
+          background:
+            repeating-linear-gradient(
+              0deg,
+              rgba(255, 255, 255, 0.05),
+              rgba(255, 255, 255, 0.05) 1px,
+              transparent 2px,
+              transparent 4px
+            );
+          animation: flicker 3s linear infinite;
+          z-index: 0;
+          border-radius: 20px;
+        }
+
+        @keyframes flicker {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.8; }
         }
 
         .register-title {
-          font-size: 2.2rem;
-          color: #ff66cc;
+          font-size: 2.6rem;
           margin-bottom: 2rem;
-          text-shadow: 0 0 10px #ff66cc, 0 0 20px #cc33ff;
-          animation: glowPulse 2.5s infinite alternate;
+          color: #ff33cc;
+          text-shadow:
+            0 0 8px #ff33cc,
+            0 0 20px #ff66ff,
+            0 0 30px #cc33ff;
+          animation: glowPulse 2.5s ease-in-out infinite alternate;
+          z-index: 1;
+          position: relative;
         }
 
         .register-form {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          gap: 1.25rem;
+          position: relative;
+          z-index: 1;
         }
 
         .register-form input,
         .register-form textarea,
         .register-form select {
-          padding: 0.8rem;
-          border-radius: 8px;
-          border: none;
+          padding: 0.85rem 1rem;
+          border-radius: 10px;
+          border: 2px solid transparent;
           outline: none;
           font-size: 1rem;
-          background: #1a1a1a;
-          color: #f0e0ff;
-          box-shadow: 0 0 8px #330033;
-          transition: box-shadow 0.3s, background 0.3s;
+          background: #200020;
+          color: #f8caff;
+          box-shadow:
+            0 0 6px #a200a6,
+            inset 0 0 8px #ff33cc;
+          transition: box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+          font-family: 'Audiowide', monospace;
+        }
+
+        .register-form input::placeholder,
+        .register-form textarea::placeholder,
+        .register-form select option {
+          color: #d49ade;
+          opacity: 0.8;
         }
 
         .register-form input:focus,
         .register-form textarea:focus,
         .register-form select:focus {
-          background: #1f1f1f;
-          box-shadow: 0 0 16px #cc33ff;
+          background: #330033;
+          border-color: #ff66cc;
+          box-shadow:
+            0 0 15px #ff66cc,
+            inset 0 0 25px #ff33cc;
         }
 
         .gender-date-row {
@@ -107,50 +179,103 @@ export default function Register() {
         .checkbox-row {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.6rem;
           font-size: 0.95rem;
           margin-top: 0.5rem;
+          color: #ff99dd;
+          user-select: none;
+          z-index: 1;
+        }
+
+        .checkbox-row input[type='checkbox'] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+          accent-color: #ff66cc;
+          box-shadow:
+            0 0 6px #ff33cc;
+          transition: box-shadow 0.3s ease;
+        }
+
+        .checkbox-row input[type='checkbox']:hover {
+          box-shadow:
+            0 0 12px #ff66ff;
         }
 
         .register-form button {
-          padding: 0.8rem;
+          padding: 0.85rem;
           border: none;
-          border-radius: 8px;
-          background: linear-gradient(90deg, #cc33ff, #6600ff);
+          border-radius: 12px;
+          background: linear-gradient(90deg, #ff33cc, #6600ff);
           color: #fff;
-          font-weight: bold;
-          letter-spacing: 1px;
+          font-weight: 700;
+          letter-spacing: 1.5px;
           cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.3s;
+          box-shadow:
+            0 0 12px #ff33cc,
+            0 0 30px #cc33ff;
+          transition: transform 0.25s ease, box-shadow 0.3s ease;
+          font-family: 'Audiowide', monospace;
+          user-select: none;
+          z-index: 1;
+          position: relative;
         }
 
         .register-form button:hover {
-          transform: scale(1.05);
-          box-shadow: 0 0 20px #ff66ff;
+          transform: scale(1.07);
+          box-shadow:
+            0 0 25px #ff66ff,
+            0 0 40px #ff33cc,
+            0 0 60px #cc33ff;
         }
 
         .note {
           margin-top: 1.5rem;
           font-size: 0.95rem;
           color: #d9b3ff;
-          text-shadow: 0 0 5px #cc66ff;
+          text-shadow: 0 0 8px #cc66ff;
+          user-select: none;
+          z-index: 1;
+          position: relative;
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         @keyframes glowPulse {
-          0% { text-shadow: 0 0 10px #ff66cc, 0 0 20px #9933ff; }
-          100% { text-shadow: 0 0 25px #ff66ff, 0 0 40px #cc33ff; }
+          0% {
+            text-shadow:
+              0 0 10px #ff66cc,
+              0 0 20px #9933ff;
+          }
+          100% {
+            text-shadow:
+              0 0 25px #ff66ff,
+              0 0 40px #cc33ff;
+          }
+        }
+
+        /* SweetAlert2 popup animation override */
+        .swal2-show-cyberpunk {
+          animation: glowPulse 1.2s ease-in-out infinite alternate !important;
+          border: 2px solid #ff33cc !important;
+          box-shadow: 0 0 30px #ff66ff !important;
+          color: #ff66cc !important;
+          background-color: #1a002b !important;
+          font-family: 'Audiowide', monospace !important;
+        }
+        .swal2-hide-cyberpunk {
+          opacity: 0 !important;
         }
       `}</style>
-
-      <link
-        href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap"
-        rel="stylesheet"
-      />
     </>
   );
 }
