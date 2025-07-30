@@ -9,7 +9,7 @@ export default function Carousel() {
 
   return (
     <>
-      <div className="bg-light p-3 rounded-5 shadow-sm position-relative border border-gray">
+      <div className="carousel-wrapper bg-light p-3 rounded-5 shadow-sm position-relative border border-gray">
         <div
           id="carouselExampleFade"
           className="carousel slide carousel-fade"
@@ -117,13 +117,15 @@ export default function Carousel() {
         </div>
       </div>
 
+      {/* 🎨 Style */}
       <style jsx>{`
         .carousel-inner {
           position: relative;
           width: 100%;
-          padding-top: 56.25%; /* 16:9 */
+          padding-top: 56.25%; /* 16:9 aspect ratio */
           overflow: hidden;
         }
+
         .carousel-item {
           position: absolute;
           top: 0;
@@ -135,27 +137,13 @@ export default function Carousel() {
           justify-content: center;
           overflow: hidden;
           opacity: 0;
-          transform: translateY(20px);
-          transition: opacity 0.6s ease, transform 0.6s ease;
+          transition: opacity 0.6s ease;
           z-index: 0;
         }
 
         .carousel-item.active {
           opacity: 1;
-          transform: translateY(0);
           z-index: 1;
-          animation: fadeFloatUp 0.6s ease forwards;
-        }
-
-        @keyframes fadeFloatUp {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
         }
 
         .custom-indicators button {
@@ -168,6 +156,7 @@ export default function Carousel() {
           margin: 0 6px;
           cursor: pointer;
         }
+
         .custom-indicators button.active {
           background-color: #007bff;
           border-color: #007bff;
@@ -190,13 +179,16 @@ export default function Carousel() {
           position: absolute;
           z-index: 10;
         }
+
         .custom-control:hover {
           background-color: #00ffff;
           box-shadow: 0 0 25px 6px rgba(0, 255, 255, 1);
         }
+
         .carousel-control-prev.custom-control {
           left: 10px;
         }
+
         .carousel-control-next.custom-control {
           right: 10px;
         }
