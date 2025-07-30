@@ -1,26 +1,81 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/router';
 
 export default function Register() {
-  const handleSubmit = (e) => {
+  const [prefix, setPrefix] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [fullname, setFullname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [address, setAddress] = useState('');
+  const [gender, setGender] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    Swal.fire({
-      title: 'Drag me!',
-      icon: 'success',
-      draggable: true,
-      confirmButtonText: 'ตกลง',
-      background: '#1a002b',
-      color: '#ff66cc',
-      showClass: {
-        popup: 'swal2-show-cyberpunk',
-      },
-      hideClass: {
-        popup: 'swal2-hide-cyberpunk',
-      },
-    });
+    if (password !== confirmPassword) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Password ไม่ตรงกัน',
+        confirmButtonText: 'ตกลง',
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          prefix,
+          firstname,
+          fullname,
+          lastname,
+          username,
+          email,
+          password,
+          address,
+          gender,
+          birthdate,
+        }),
+      });
+
+      const result = await res.json();
+      console.log(result);
+
+      Swal.fire({
+        title: 'สมัครสมาชิกสำเร็จ!',
+        icon: 'success',
+        draggable: true,
+        confirmButtonText: 'ตกลง',
+        background: '#1a002b',
+        color: '#ff66cc',
+        showClass: {
+          popup: 'swal2-show-cyberpunk',
+        },
+        hideClass: {
+          popup: 'swal2-hide-cyberpunk',
+        },
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่สามารถสมัครสมาชิกได้ในขณะนี้',
+        confirmButtonText: 'ตกลง',
+      });
+    }
   };
 
   return (
@@ -29,29 +84,86 @@ export default function Register() {
         <h1 className="register-title">Create Your Account</h1>
 
         <form className="register-form" onSubmit={handleSubmit}>
-          <select required>
-            <option value="">-- คำนำหน้า --</option>
-            <option value="mr">นาย</option>
-            <option value="mrs">นาง</option>
-            <option value="ms">นางสาว</option>
-          </select>
+          <select name="firstname" onChange={(e) => setFirstname(e.target.value)} className="w-full border p-2 rounded" required>
+          <option value="">คำนำหน้าชื่อ</option>
+          <option value="นาย">นาย</option>
+          <option value="นาง">นาง</option>
+          <option value="นางสาว">นางสาว</option>
+        </select>
+        
+         <input
+            type="text"
+            placeholder="ชื่อเต็ม (Fullname)"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
+          />
 
-          <input type="text" placeholder="ชื่อ" required />
-          <input type="text" placeholder="นามสกุล" required />
-          <input type="text" placeholder="Username" required />
-          <input type="email" placeholder="Email" required />
-          <input type="password" placeholder="Password" required />
-          <input type="password" placeholder="Confirm Password" required />
-          <textarea placeholder="ที่อยู่" rows={3} required />
+          <input
+            type="text"
+            placeholder="นามสกุล"
+            value={lastname}
+            onChange={(e) => setLastname(e.target.value)}
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+
+          <textarea
+            placeholder="ที่อยู่"
+            rows={3}
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            required
+          />
 
           <div className="gender-date-row">
-            <select required>
+            <select
+              required
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+            >
               <option value="">-- เพศ --</option>
               <option value="male">ชาย</option>
               <option value="female">หญิง</option>
               <option value="other">อื่น ๆ</option>
             </select>
-            <input type="date" required />
+
+            <input
+              type="date"
+              required
+              value={birthdate}
+              onChange={(e) => setBirthdate(e.target.value)}
+            />
           </div>
 
           <div className="checkbox-row">
