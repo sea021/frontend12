@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { useRouter } from 'next/router';
 
 export default function Register() {
   const [prefix, setPrefix] = useState('');
@@ -50,8 +49,12 @@ export default function Register() {
         }),
       });
 
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const result = await res.json();
-      console.log(result);
+      console.log('Response from API:', result);
 
       Swal.fire({
         title: 'สมัครสมาชิกสำเร็จ!',
@@ -67,6 +70,9 @@ export default function Register() {
           popup: 'swal2-hide-cyberpunk',
         },
       });
+
+      // ถ้าต้องการเคลียร์ฟอร์มหรือ redirect ที่นี่ได้เลย
+
     } catch (error) {
       console.error('Error:', error);
       Swal.fire({
@@ -84,14 +90,28 @@ export default function Register() {
         <h1 className="register-title">Create Your Account</h1>
 
         <form className="register-form" onSubmit={handleSubmit}>
-          <select name="firstname" onChange={(e) => setFirstname(e.target.value)} className="w-full border p-2 rounded" required>
-          <option value="">คำนำหน้าชื่อ</option>
-          <option value="นาย">นาย</option>
-          <option value="นาง">นาง</option>
-          <option value="นางสาว">นางสาว</option>
-        </select>
-        
-         <input
+          <select
+            name="prefix"
+            value={prefix}
+            onChange={(e) => setPrefix(e.target.value)}
+            className="w-full border p-2 rounded"
+            required
+          >
+            <option value="">คำนำหน้าชื่อ</option>
+            <option value="นาย">นาย</option>
+            <option value="นาง">นาง</option>
+            <option value="นางสาว">นางสาว</option>
+          </select>
+
+          <input
+            type="text"
+            placeholder="ชื่อจริง (Firstname)"
+            value={firstname}
+            onChange={(e) => setFirstname(e.target.value)}
+            required
+          />
+
+          <input
             type="text"
             placeholder="ชื่อเต็ม (Fullname)"
             value={fullname}

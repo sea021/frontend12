@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
+import { FaGlobe, FaFacebookF, FaYoutube, FaInstagram, FaTwitter } from 'react-icons/fa';
 
 export default function Contact() {
   return (
     <>  
       <div className="contact-wrapper container py-5 fade-up">
-        <div className="row text-center pb-4">
+        <div className="row text-center pb-4">  
           <div className="col-lg-8 mx-auto">
             <h1 className="contact-title">Contact Us</h1>
             <p className="text-desc">
@@ -35,13 +36,35 @@ export default function Contact() {
           </div>
         </div>
 
-        <div className="row text-center pt-5 fade-up delay-2">
+        {/* New Official Accounts Section */}
+        <div className="row text-center pt-4 fade-up delay-3">
           <div className="col-lg-8 mx-auto">
-            <h5 className="text-muted text-white">You can also reach us at:</h5>
-            <p className="text-muted text-white">rov.in.th</p>
+            <h5 className="official-title">ติดตาม Official Account ได้ที่</h5>
+            <div className="icon-row">
+              <a href="https://rov.in.th" target="_blank" rel="noopener noreferrer" aria-label="Website">
+                <FaGlobe />
+              </a>
+              <a href="https://www.facebook.com/ROVTH/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <FaFacebookF />
+              </a>
+              <a href="https://www.youtube.com/channel/UCy19QXxbCHh8qVVCbuGk-ig" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <FaYoutube />
+              </a>
+              <a href="https://www.instagram.com/garena_rov_official/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <FaInstagram />
+              </a>
+              <a href="https://x.com/garenarovth/" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                <FaTwitter />
+              </a>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* ➡️ Footer เพิ่มตรงนี้ */}
+      <footer className="footer">
+        © 2015 TencenT Games Inc. All rights reserved.
+      </footer>
 
       {/* 🎨 Style */}
       <style jsx>{`
@@ -96,6 +119,7 @@ export default function Contact() {
           letter-spacing: 1px;
           transition: all 0.3s ease;
           margin-top: 1rem;
+          cursor: pointer;
         }
 
         .btn-submit:hover {
@@ -124,11 +148,77 @@ export default function Contact() {
           animation-delay: 0.8s;
         }
 
+        .delay-3 {
+          animation-delay: 1.2s;
+        }
+
         @keyframes fadeUp {
           to {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+
+        /* Custom styles for the contact info text */
+        .contact-subtitle {
+          color: #ff66cc;
+          text-shadow: 0 0 8px #ff66cc, 0 0 16px #9933ff;
+          font-size: 1.3rem;
+        }
+
+        .contact-link {
+          color: #cc99ff;
+          text-shadow: 0 0 6px #cc33ff, 0 0 12px #ff66ff;
+          font-weight: bold;
+          font-size: 1.2rem;
+        }
+
+        /* Official accounts section */
+        .official-title {
+          color: #ff66cc;
+          text-shadow: 0 0 10px #ff66cc;
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          font-weight: 600;
+        }
+
+        .icon-row {
+          display: flex;
+          justify-content: center;
+          gap: 1.8rem;
+          color: #ff66cc;
+          font-size: 2.4rem;
+          text-shadow: 0 0 6px #cc33ff;
+          transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .icon-row a {
+          color: inherit;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.3s ease, transform 0.3s ease;
+          cursor: pointer;
+        }
+
+        .icon-row a:hover {
+          color: #ff33cc;
+          transform: scale(1.3);
+          text-shadow: 0 0 15px #ff33cc, 0 0 30px #cc33ff;
+        }
+
+        /* Footer Style */
+        .footer {
+          text-align: center;
+          padding: 1.5rem 1rem;
+          color: #fff;
+          font-family: 'Audiowide', monospace;
+          font-size: 0.9rem;
+          text-shadow: 0 0 8px #cc33ff, 0 0 20px #9933ff;
+          user-select: none;
+          letter-spacing: 0.05em;
+          margin-top: 3rem;
+          border-radius: 0 0 12px 12px;
         }
       `}</style>
 

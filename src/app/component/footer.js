@@ -37,15 +37,14 @@ export default function Footer() {
           <div className="col-lg-3 col-md-6 mb-4 mb-lg-0">
             <h5 className="text-uppercase fw-bold mb-4">Follow Us</h5>
             <div>
-              <a href="#" className="text-muted me-3 text-decoration-none fs-4">
+              <a href="https://www.facebook.com/ROVTH/" className="text-muted me-3 text-decoration-none fs-4">
                 <i className="bi bi-facebook"></i>
               </a>
-             
-              <a href="#" className="text-muted me-3 text-decoration-none fs-4">
+              <a href="https://www.instagram.com/garena_rov_official/" className="text-muted me-3 text-decoration-none fs-4">
                 <i className="bi bi-instagram"></i>
               </a>
-              <a href="#" className="text-muted text-decoration-none fs-4">
-                <i className="bi bi-google"></i>
+              <a href="https://www.youtube.com/channel/UCy19QXxbCHh8qVVCbuGk-ig" className="text-muted text-decoration-none fs-4">
+                <i className="bi bi-youtube"></i>
               </a>
             </div>
           </div>

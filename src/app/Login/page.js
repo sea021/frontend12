@@ -46,6 +46,10 @@ export default function Login() {
         </form>
       </div>
 
+      <footer className="footer">
+        © 2015 TencenT Games Inc. All rights reserved.
+      </footer>
+
       <style jsx>{`
         .login-wrapper {
           width: 100vw;
@@ -58,6 +62,7 @@ export default function Login() {
           font-family: 'Audiowide', sans-serif;
           padding: 2rem;
           box-sizing: border-box;
+          flex-direction: column;
         }
 
         .login-form {
@@ -76,6 +81,7 @@ export default function Login() {
           gap: 1.5rem;
           text-align: center;
           transition: opacity 0.6s ease, transform 0.6s ease;
+          margin-bottom: 2rem;
         }
 
         /* animation fade + float up */
@@ -164,6 +170,20 @@ export default function Login() {
         .login-links .link:hover {
           color: #ff66ff;
           text-decoration: underline;
+        }
+
+        /* Footer Style */
+        .footer {
+          text-align: center;
+          padding: 1.5rem 1rem;
+          color: #fff;
+          font-family: 'Audiowide', monospace;
+          font-size: 0.9rem;
+          text-shadow: 0 0 8px #cc33ff, 0 0 20px #9933ff;
+          user-select: none;
+          letter-spacing: 0.05em;
+          margin-top: 3rem;
+          border-radius: 0 0 12px 12px;
         }
       `}</style>
 
