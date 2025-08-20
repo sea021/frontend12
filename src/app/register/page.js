@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
   const [prefix, setPrefix] = useState('');
@@ -15,6 +16,8 @@ export default function Register() {
   const [address, setAddress] = useState('');
   const [gender, setGender] = useState('');
   const [birthdate, setBirthdate] = useState('');
+
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,19 +62,28 @@ export default function Register() {
       Swal.fire({
         title: 'สมัครสมาชิกสำเร็จ!',
         icon: 'success',
-        draggable: true,
-        confirmButtonText: 'ตกลง',
         background: '#1a002b',
         color: '#ff66cc',
-        showClass: {
-          popup: 'swal2-show-cyberpunk',
-        },
-        hideClass: {
-          popup: 'swal2-hide-cyberpunk',
-        },
-      });
+        timer: 1000,               // ⏳ แสดงผล 2 วิ
+        showConfirmButton: false,  // ❌ ไม่ต้องกดปุ่ม
+        willClose: () => {
+          // ✅ ล้างค่าในฟอร์ม
+          setPrefix('');
+          setFirstname('');
+          setFullname('');
+          setLastname('');
+          setUsername('');
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          setAddress('');
+          setGender('');
+          setBirthdate('');
 
-      // ถ้าต้องการเคลียร์ฟอร์มหรือ redirect ที่นี่ได้เลย
+          // ✅ ไปหน้า login อัตโนมัติ
+          router.push('/Login');
+        }
+      });
 
     } catch (error) {
       console.error('Error:', error);
@@ -194,9 +206,12 @@ export default function Register() {
           <button type="submit">Register</button>
         </form>
 
-        <p className="note">* กรุณากรอกข้อมูลให้ครบถ้วนเพื่อเข้าสู่โลกแห่งการต่อสู้!</p>
+        <p className="note">
+          * กรุณากรอกข้อมูลให้ครบถ้วนเพื่อเข้าสู่โลกแห่งการต่อสู้!
+        </p>
       </div>
 
+      {/* ==== Cyberpunk Style ==== */}
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 

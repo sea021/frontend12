@@ -1,33 +1,49 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
-export default function Page() {
+export default function UserPage() {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  async function getUsers() {
-    try {
-      const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users');
-      if (!res.ok) return;
-      const data = await res.json();
-      setItems(data);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
+  // ✅ ตรวจสอบ token
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/Login');
+      return;
+    }
+
+    async function getUsers() {
+      try {
+        const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users');
+        if (!res.ok) {
+          console.error('Failed to fetch data');
+          return;
+        }
+        const data = await res.json();
+        setItems(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    }
+
     getUsers();
     const interval = setInterval(getUsers, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [router]);
 
+  // ✅ ลบผู้ใช้พร้อม Swal ยืนยัน
   async function handleDelete(id) {
     const result = await Swal.fire({
       title: 'คุณแน่ใจหรือไม่?',
-      text: "คุณต้องการลบผู้ใช้นี้ใช่หรือไม่?",
+      text: 'คุณต้องการลบผู้ใช้นี้ใช่หรือไม่?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#7b3fe4',
@@ -44,8 +60,9 @@ export default function Page() {
       const res = await fetch(`http://itdev.cmtc.ac.th:3000/api/users/${id}`, {
         method: 'DELETE',
       });
+
       if (res.ok) {
-        await getUsers();
+        setItems(items.filter((u) => u.id !== id));
         Swal.fire({
           icon: 'success',
           title: 'ลบสำเร็จ!',
@@ -63,6 +80,15 @@ export default function Page() {
     }
   }
 
+  // ✅ แสดง loading ระหว่างโหลดข้อมูล
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <h1 style={{ color: '#7b3fe4' }}>Loading...</h1>
+      </div>
+    );
+  }
+
   return (
     <>
       <style jsx>{`
@@ -70,7 +96,6 @@ export default function Page() {
 
         .container {
           min-height: 100vh;
-         
           display: flex;
           justify-content: center;
           align-items: center;
@@ -79,8 +104,8 @@ export default function Page() {
         }
 
         .card {
-          width: 900px;
-          max-width: 100%;
+          width: 100%;
+          max-width: 1200px;
           background: linear-gradient(145deg, #220044, #110022);
           border-radius: 20px;
           box-shadow: 0 0 20px #7b3fe4aa, 0 0 30px #220033 inset;
@@ -99,11 +124,6 @@ export default function Page() {
           display: flex;
           align-items: center;
           gap: 10px;
-        }
-
-        .card-header i {
-          font-size: 1.8rem;
-          color: #ff66cc;
         }
 
         table {
@@ -148,11 +168,6 @@ export default function Page() {
           text-align: left;
           padding-left: 20px;
           font-weight: 600;
-        }
-
-        tbody td:first-child {
-          font-weight: bold;
-          color: #ff99ff;
         }
 
         .btn-purple,
@@ -207,6 +222,10 @@ export default function Page() {
                     <th>Firstname</th>
                     <th>Fullname</th>
                     <th>Lastname</th>
+                    <th>Username</th>
+                    <th>Address</th>
+                    <th>Sex</th>
+                    <th>Birthday</th>
                     <th>Edit</th>
                     <th>Delete</th>
                   </tr>
@@ -219,6 +238,10 @@ export default function Page() {
                         <td>{item.firstname}</td>
                         <td>{item.fullname}</td>
                         <td>{item.lastname}</td>
+                        <td>{item.username}</td>
+                        <td>{item.address}</td>
+                        <td>{item.sex}</td>
+                        <td>{item.birthday}</td>
                         <td>
                           <Link href={`/admin/users/edit/${item.id}`}>
                             <button className="btn-purple" type="button">
@@ -239,7 +262,7 @@ export default function Page() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="no-data">
+                      <td colSpan="10" className="no-data">
                         ไม่พบข้อมูลผู้ใช้งาน
                       </td>
                     </tr>
