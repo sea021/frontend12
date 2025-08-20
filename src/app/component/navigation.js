@@ -1,14 +1,32 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-export default function Navigation() {
+export default function Navbar() {
+  const router = useRouter();
+  const [tokenState, setToken] = useState('');
+
+  // อ่าน token จาก localStorage ตอน mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setToken(token);
+  }, []);
+
+  // ฟังก์ชัน SignOut
+  const handleSignOut = () => {
+    localStorage.removeItem('token');               // ลบ token
+    console.log('Token after remove:', localStorage.getItem('token')); // ต้องเป็น null
+    setToken(null);                                 // รีเซ็ต state
+    router.push('/Login');                          // redirect ไปหน้า Login
+  };
+
+  // โหลด Bootstrap JS และ collapse หลังคลิก
   useEffect(() => {
     import('bootstrap/dist/js/bootstrap.bundle.min.js').then(({ default: bootstrap }) => {
-      // หุบ Navbar เมื่อคลิกลิงก์
-      const navLinks = document.querySelectorAll('.navbar-nav .nav-item .btn');
+      const navLinks = document.querySelectorAll('.navbar-nav .nav-item .btn, .navbar-nav .nav-item .nav-link');
       const collapseEl = document.getElementById('navbarSupportedContent');
 
       navLinks.forEach(link => {
@@ -21,9 +39,7 @@ export default function Navigation() {
       });
 
       return () => {
-        navLinks.forEach(link => {
-          link.removeEventListener('click', () => {});
-        });
+        navLinks.forEach(link => link.removeEventListener('click', () => {}));
       };
     });
   }, []);
@@ -82,7 +98,19 @@ export default function Navigation() {
                 <Link className="btn btn-cyber text-white" href="/contact">Contact</Link>
               </li>
               <li className="nav-item">
-                <Link href="/Login" className="btn btn-login-glow text-white">Login</Link>
+                {tokenState ? (
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="btn btn-login-glow text-white"
+                  >
+                    SignOut
+                  </button>
+                ) : (
+                  <Link href="/Login" className="btn btn-login-glow text-white">
+                    Login
+                  </Link>
+                )}
               </li>
             </ul>
           </div>
@@ -91,74 +119,33 @@ export default function Navigation() {
 
       {/* Style */}
       <style jsx>{`
-        .video-bg-wrapper {
-          position: fixed;
-          inset: 0;
-          z-index: -1;
-          overflow: hidden;
-        }
-
-        .video-bg {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          filter: brightness(0.35) contrast(1.4) saturate(1.8);
-          display: block;
-        }
-
-        .video-overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.3);
-        }
+        .video-bg-wrapper { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+        .video-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35) contrast(1.4) saturate(1.8); display: block; }
+        .video-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); }
 
         .cyber-navbar {
-          background-color: rgba(20, 0, 40, 0.85);
+          background-color: rgba(20,0,40,0.85);
           backdrop-filter: blur(10px);
           font-family: 'Audiowide', sans-serif;
           border-bottom: 2px solid #cc66ff;
           box-shadow: 0 0 25px #cc66ff;
           animation: fadeIn 1.5s ease-in-out;
         }
+        @keyframes fadeIn { 0% { opacity:0; transform: translateY(-20px);} 100% { opacity:1; transform: translateY(0);} }
 
-        @keyframes fadeIn {
-          0% { opacity: 0; transform: translateY(-20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .logo-wrapper {
-          position: relative;
-          width: 64px;
-          height: 64px;
-        }
-
-        .logo-image {
-          transition: transform 0.6s ease;
-        }
-
-        .logo-image:hover {
-          transform: rotate(360deg) scale(1.1);
-        }
-
-        @media (min-width: 768px) {
-          .logo-wrapper {
-            width: 80px;
-            height: 80px;
-          }
-        }
+        .logo-wrapper { position: relative; width: 64px; height: 64px; }
+        .logo-image { transition: transform 0.6s ease; }
+        .logo-image:hover { transform: rotate(360deg) scale(1.1); }
+        @media (min-width: 768px) { .logo-wrapper { width: 80px; height: 80px; } }
 
         .brand-text-glow {
           font-size: 1.5rem;
           font-weight: 700;
           color: #ff66cc;
           animation: glowPulse 2.5s infinite alternate;
-          text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff;
+          text-shadow: 0 0 8px #ff66cc,0 0 16px #cc33ff;
         }
-
-        @keyframes glowPulse {
-          0% { text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff; }
-          100% { text-shadow: 0 0 20px #ff66ff, 0 0 30px #cc33ff; }
-        }
+        @keyframes glowPulse { 0% { text-shadow:0 0 8px #ff66cc,0 0 16px #cc33ff;} 100% { text-shadow:0 0 20px #ff66ff,0 0 30px #cc33ff;} }
 
         .btn-cyber {
           background: linear-gradient(90deg, #cc33ff, #6600ff);
@@ -173,12 +160,11 @@ export default function Navigation() {
           letter-spacing: 1px;
           font-size: 1rem;
         }
-
         .btn-cyber:hover {
           background: linear-gradient(90deg, #ff33cc, #9933ff);
           transform: scale(1.08) translateY(-2px);
-          box-shadow: 0 0 25px #ff66ff, 0 0 35px #cc33ff;
-          color: #fff;
+          box-shadow: 0 0 25px #ff66ff,0 0 35px #cc33ff;
+          color:#fff;
         }
 
         .btn-login-glow {
@@ -196,39 +182,30 @@ export default function Navigation() {
           z-index: 1;
           box-shadow: 0 0 12px #ff66ff;
         }
-
         .btn-login-glow::before {
           content: '';
           position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: conic-gradient(from 0deg, #ff66cc, #cc33ff, #9933ff, #ff66cc);
+          top:-50%;
+          left:-50%;
+          width:200%;
+          height:200%;
+          background: conic-gradient(from 0deg, #ff66cc,#cc33ff,#9933ff,#ff66cc);
           animation: rotateGlow 5s linear infinite;
-          z-index: -1;
+          z-index:-1;
           filter: blur(12px);
-          opacity: 0.5;
+          opacity:0.5;
         }
-
         .btn-login-glow:hover {
           background: #ff66cc;
           color: #fff !important;
           transform: scale(1.1);
-          box-shadow: 0 0 25px #ff99ff, 0 0 40px #cc33ff, 0 0 60px #ff66cc;
+          box-shadow: 0 0 25px #ff99ff,0 0 40px #cc33ff,0 0 60px #ff66cc;
         }
-
-        @keyframes rotateGlow {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
+        @keyframes rotateGlow { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
       `}</style>
 
       {/* Google Font */}
-      <link
-        href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap"
-        rel="stylesheet"
-      />
+      <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet"/>
     </>
   );
 }

@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
 
 export default function Login() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [animateOut, setAnimateOut] = useState(false);
   const [username, setUsername] = useState('');
@@ -41,7 +39,10 @@ export default function Login() {
         });
 
         setAnimateOut(true);
-        setTimeout(() => router.push('/admin/users'), 600);
+        setTimeout(() => {
+          // Redirect ด้วย window.location.href
+          window.location.href = '/admin/users';
+        }, 600);
 
       } else {
         Swal.fire({
@@ -224,7 +225,6 @@ export default function Login() {
           box-shadow: none;
         }
 
-        /* Cyberpunk Links */
         .login-links {
           margin-top: 1rem;
           font-size: 0.95rem;
@@ -283,7 +283,6 @@ export default function Login() {
           border-radius: 0 0 12px 12px;
         }
 
-        /* SweetAlert2 cyberpunk */
         .swal2-show-cyberpunk {
           animation: glowPulse 1.2s ease-in-out infinite alternate !important;
           border: 2px solid #ff33cc !important;
@@ -297,15 +296,9 @@ export default function Login() {
         }
 
         @keyframes glowPulse {
-          0% {
-            text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff;
-          }
-          50% {
-            text-shadow: 0 0 16px #ff66ff, 0 0 32px #cc33ff;
-          }
-          100% {
-            text-shadow: 0 0 24px #ff33cc, 0 0 48px #ff66ff;
-          }
+          0% { text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff; }
+          50% { text-shadow: 0 0 16px #ff66ff, 0 0 32px #cc33ff; }
+          100% { text-shadow: 0 0 24px #ff33cc, 0 0 48px #ff66ff; }
         }
       `}</style>
 
