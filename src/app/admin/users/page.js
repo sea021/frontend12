@@ -10,7 +10,6 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // ✅ ตรวจสอบ token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -20,11 +19,8 @@ export default function UserPage() {
 
     async function getUsers() {
       try {
-        const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users');
-        if (!res.ok) {
-          console.error('Failed to fetch data');
-          return;
-        }
+        const res = await fetch('/api/user');
+        if (!res.ok) return;
         const data = await res.json();
         setItems(data);
         setLoading(false);
@@ -39,7 +35,6 @@ export default function UserPage() {
     return () => clearInterval(interval);
   }, [router]);
 
-  // ✅ ลบผู้ใช้พร้อม Swal ยืนยัน
   async function handleDelete(id) {
     const result = await Swal.fire({
       title: 'คุณแน่ใจหรือไม่?',
@@ -57,10 +52,7 @@ export default function UserPage() {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`http://itdev.cmtc.ac.th:3000/api/users/${id}`, {
-        method: 'DELETE',
-      });
-
+      const res = await fetch(`http://itdev.cmtc.ac.th:3000/api/users/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setItems(items.filter((u) => u.id !== id));
         Swal.fire({
@@ -72,15 +64,12 @@ export default function UserPage() {
           timer: 1500,
           showConfirmButton: false,
         });
-      } else {
-        Swal.fire('ลบไม่สำเร็จ', 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
-      }
+      } else Swal.fire('ลบไม่สำเร็จ', 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
     } catch (error) {
       Swal.fire('ลบไม่สำเร็จ', 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
     }
   }
 
-  // ✅ แสดง loading ระหว่างโหลดข้อมูล
   if (loading) {
     return (
       <div className="text-center py-5">
@@ -129,9 +118,9 @@ export default function UserPage() {
         table {
           width: 100%;
           border-collapse: separate;
-          border-spacing: 0 8px;
+          border-spacing: 0 6px;
           color: #e0c9ff;
-          font-size: 0.85rem; /* ตารางเล็กลง */
+          font-size: 0.8rem; /* เล็กลงอีก */
         }
 
         thead tr {
@@ -139,24 +128,24 @@ export default function UserPage() {
         }
 
         thead th {
-          padding: 6px 8px;
+          padding: 4px 6px;
           text-align: center;
           font-weight: 600;
         }
 
         tbody tr {
           background: #1c0033;
-          border-radius: 8px;
+          border-radius: 6px;
           transition: transform 0.2s, box-shadow 0.2s;
         }
 
         tbody tr:hover {
           transform: scale(1.01);
-          box-shadow: 0 0 10px #9c6cffaa;
+          box-shadow: 0 0 8px #9c6cffaa;
         }
 
         tbody td {
-          padding: 6px 8px;
+          padding: 4px 6px;
           vertical-align: middle;
           text-align: center;
         }
@@ -165,19 +154,19 @@ export default function UserPage() {
         tbody td:nth-child(3),
         tbody td:nth-child(4) {
           text-align: left;
-          padding-left: 12px;
+          padding-left: 10px;
           font-weight: 600;
         }
 
         .btn-purple,
         .btn-danger {
-          padding: 4px 8px; /* ปุ่มเล็กลง */
+          padding: 3px 6px; /* ปุ่มเล็กลงอีก */
           font-weight: 600;
           border: none;
-          border-radius: 8px;
+          border-radius: 6px;
           cursor: pointer;
           transition: background 0.2s, transform 0.2s;
-          font-size: 0.8rem; /* ขนาดตัวอักษรเล็กลง */
+          font-size: 0.75rem; /* ตัวอักษรเล็กลง */
         }
 
         .btn-purple { background-color: #7b3fe4; color: white; }
@@ -188,7 +177,7 @@ export default function UserPage() {
 
         .no-data {
           text-align: center;
-          padding: 16px 0;
+          padding: 12px 0;
           font-style: italic;
           color: #a68aff99;
         }
