@@ -19,7 +19,7 @@ export default function UserPage() {
 
     async function getUsers() {
       try {
-        const res = await fetch('/api/user');
+        const res = await fetch('/api/auth/users');
         if (!res.ok) return;
         const data = await res.json();
         setItems(data);
@@ -52,7 +52,7 @@ export default function UserPage() {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`http://itdev.cmtc.ac.th:3000/api/users/${id}`, { method: 'DELETE' });
+      const res = await fetch(`https://backend-nextjs-virid.vercel.app/api/users/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setItems(items.filter((u) => u.id !== id));
         Swal.fire({
@@ -251,3 +251,4 @@ export default function UserPage() {
     </>
   );
 }
+
