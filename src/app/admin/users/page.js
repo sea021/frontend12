@@ -129,8 +129,9 @@ export default function UserPage() {
         table {
           width: 100%;
           border-collapse: separate;
-          border-spacing: 0 12px;
+          border-spacing: 0 8px;
           color: #e0c9ff;
+          font-size: 0.85rem; /* ตารางเล็กลง */
         }
 
         thead tr {
@@ -138,71 +139,56 @@ export default function UserPage() {
         }
 
         thead th {
-          padding: 14px 12px;
+          padding: 6px 8px;
           text-align: center;
           font-weight: 600;
-          letter-spacing: 1px;
         }
 
         tbody tr {
           background: #1c0033;
-          border-radius: 12px;
+          border-radius: 8px;
           transition: transform 0.2s, box-shadow 0.2s;
         }
 
         tbody tr:hover {
           transform: scale(1.01);
-          box-shadow: 0 0 15px #9c6cffaa;
+          box-shadow: 0 0 10px #9c6cffaa;
         }
 
         tbody td {
-          padding: 14px 12px;
+          padding: 6px 8px;
           vertical-align: middle;
           text-align: center;
-          font-weight: 500;
         }
 
         tbody td:nth-child(2),
         tbody td:nth-child(3),
         tbody td:nth-child(4) {
           text-align: left;
-          padding-left: 20px;
+          padding-left: 12px;
           font-weight: 600;
         }
 
         .btn-purple,
         .btn-danger {
-          padding: 6px 14px;
+          padding: 4px 8px; /* ปุ่มเล็กลง */
           font-weight: 600;
           border: none;
-          border-radius: 10px;
+          border-radius: 8px;
           cursor: pointer;
           transition: background 0.2s, transform 0.2s;
+          font-size: 0.8rem; /* ขนาดตัวอักษรเล็กลง */
         }
 
-        .btn-purple {
-          background-color: #7b3fe4;
-          color: white;
-        }
+        .btn-purple { background-color: #7b3fe4; color: white; }
+        .btn-purple:hover { background-color: #9c6cff; transform: translateY(-1px); }
 
-        .btn-purple:hover {
-          background-color: #9c6cff;
-          transform: translateY(-2px);
-        }
-
-        .btn-danger {
-          background-color: #cc3399;
-          color: white;
-        }
-
-        .btn-danger:hover {
-          background-color: #ff66cc;
-          transform: translateY(-2px);
-        }
+        .btn-danger { background-color: #cc3399; color: white; }
+        .btn-danger:hover { background-color: #ff66cc; transform: translateY(-1px); }
 
         .no-data {
           text-align: center;
-          padding: 24px 0;
+          padding: 16px 0;
           font-style: italic;
           color: #a68aff99;
         }
