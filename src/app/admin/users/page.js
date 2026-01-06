@@ -19,23 +19,42 @@ export default function UserPage() {
 
     async function getUsers() {
       try {
-        const res = await fetch('/api/auth/users');
-        if (!res.ok) return;
+        // เพิ่ม Headers เพื่อส่ง Token ไปยัง API Route
+        const res = await fetch('/api/users', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // หาก Token หมดอายุ (401) ให้กลับไปหน้า Login
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          router.push('/Login');
+          return;
+        }
+
+        if (!res.ok) throw new Error('Failed to fetch users');
+        
         const data = await res.json();
         setItems(data);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
         setLoading(false);
       }
     }
 
     getUsers();
-    const interval = setInterval(getUsers, 3000);
+    // ปรับ Interval เป็น 5 วินาที เพื่อลดภาระของ Server
+    const interval = setInterval(getUsers, 5000); 
     return () => clearInterval(interval);
   }, [router]);
 
   async function handleDelete(id) {
+    const token = localStorage.getItem('token');
+    
     const result = await Swal.fire({
       title: 'คุณแน่ใจหรือไม่?',
       text: 'คุณต้องการลบผู้ใช้นี้ใช่หรือไม่?',
@@ -52,7 +71,14 @@ export default function UserPage() {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`https://backend-nextjs-virid.vercel.app/api/users/${id}`, { method: 'DELETE' });
+      // แก้ไข: เปลี่ยนมาใช้ API Proxy ภายใน (/api/users) แทนการยิงตรงไปหลังบ้าน
+      const res = await fetch(`/api/users?id=${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
       if (res.ok) {
         setItems(items.filter((u) => u.id !== id));
         Swal.fire({
@@ -64,9 +90,12 @@ export default function UserPage() {
           timer: 1500,
           showConfirmButton: false,
         });
-      } else Swal.fire('ลบไม่สำเร็จ', 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
+      } else {
+        const errorData = await res.json();
+        Swal.fire('ลบไม่สำเร็จ', errorData.error || 'เกิดข้อผิดพลาด', 'error');
+      }
     } catch (error) {
-      Swal.fire('ลบไม่สำเร็จ', 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
+      Swal.fire('ลบไม่สำเร็จ', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
     }
   }
 
@@ -120,7 +149,7 @@ export default function UserPage() {
           border-collapse: separate;
           border-spacing: 0 6px;
           color: #e0c9ff;
-          font-size: 0.8rem; /* เล็กลงอีก */
+          font-size: 0.8rem;
         }
 
         thead tr {
@@ -128,7 +157,7 @@ export default function UserPage() {
         }
 
         thead th {
-          padding: 4px 6px;
+          padding: 8px;
           text-align: center;
           font-weight: 600;
         }
@@ -140,33 +169,28 @@ export default function UserPage() {
         }
 
         tbody tr:hover {
-          transform: scale(1.01);
+          transform: scale(1.005);
           box-shadow: 0 0 8px #9c6cffaa;
         }
 
         tbody td {
-          padding: 4px 6px;
+          padding: 8px;
           vertical-align: middle;
           text-align: center;
         }
 
-        tbody td:nth-child(2),
-        tbody td:nth-child(3),
-        tbody td:nth-child(4) {
-          text-align: left;
-          padding-left: 10px;
-          font-weight: 600;
-        }
-
         .btn-purple,
         .btn-danger {
-          padding: 3px 6px; /* ปุ่มเล็กลงอีก */
+          padding: 5px 10px;
           font-weight: 600;
           border: none;
           border-radius: 6px;
           cursor: pointer;
-          transition: background 0.2s, transform 0.2s;
-          font-size: 0.75rem; /* ตัวอักษรเล็กลง */
+          transition: all 0.2s;
+          font-size: 0.75rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
         }
 
         .btn-purple { background-color: #7b3fe4; color: white; }
@@ -177,7 +201,7 @@ export default function UserPage() {
 
         .no-data {
           text-align: center;
-          padding: 12px 0;
+          padding: 20px;
           font-style: italic;
           color: #a68aff99;
         }
@@ -251,4 +275,3 @@ export default function UserPage() {
     </>
   );
 }
-

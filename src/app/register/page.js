@@ -32,7 +32,7 @@ export default function Register() {
     }
 
     try {
-      const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users', {
+      const res = await fetch('https://backend-mauve-iota-64.vercel.app/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

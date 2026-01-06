@@ -15,7 +15,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch('https://backend-nextjs-virid.vercel.app/api/auth/login', {
+      const res = await fetch('https://backend-mauve-iota-64.vercel.app/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
