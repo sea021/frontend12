@@ -8,29 +8,37 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 export default function UserPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null); 
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    
+    // --- จุดแก้ไขสำคัญ: ดึง Username จาก localStorage ที่เก็บไว้ตอน Login จริง ---
+    // หากไม่มีค่าใน localStorage จะเป็น null (ทำให้แก้ไขคนอื่นไม่ได้โดยพลการ)
+    const loggedInUsername = localStorage.getItem('username'); 
+
     if (!token) {
       router.push('/Login');
       return;
     }
 
-    async function getUsers() {
+    async function fetchData() {
       try {
-        // เพิ่ม Headers เพื่อส่ง Token ไปยัง API Route
-        const res = await fetch('/api/users', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        };
+
+        // ดึงรายชื่อผู้ใช้ทั้งหมด
+        const res = await fetch('/api/users', { 
+          method: 'GET', 
+          headers: headers 
         });
 
-        // หาก Token หมดอายุ (401) ให้กลับไปหน้า Login
         if (res.status === 401) {
           localStorage.removeItem('token');
+          localStorage.removeItem('username');
           router.push('/Login');
           return;
         }
@@ -39,6 +47,16 @@ export default function UserPage() {
         
         const data = await res.json();
         setItems(data);
+
+        // ค้นหา ID ของเราจากรายการผู้ใช้ โดยเทียบกับ Username ที่ Login เข้ามาจริง
+        if (loggedInUsername) {
+          const me = data.find(user => user.username === loggedInUsername);
+          if (me) {
+            setCurrentUserId(me.id.toString());
+            console.log("System: Logged in as ID", me.id, `(${loggedInUsername})`);
+          }
+        }
+
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -46,23 +64,34 @@ export default function UserPage() {
       }
     }
 
-    getUsers();
-    // ปรับ Interval เป็น 5 วินาที เพื่อลดภาระของ Server
-    const interval = setInterval(getUsers, 5000); 
+    fetchData();
+    // ตั้งเวลา Refresh ข้อมูลทุก 5 วินาที
+    const interval = setInterval(fetchData, 5000); 
     return () => clearInterval(interval);
   }, [router]);
 
   async function handleDelete(id) {
+    // ป้องกันความปลอดภัยหน้าบ้าน: เช็คว่า ID ที่จะลบคือ ID ของตัวเองหรือไม่
+    if (currentUserId?.toString() !== id.toString()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Access Denied',
+        text: 'คุณไม่มีสิทธิ์ลบข้อมูลของผู้อื่น',
+        background: '#1b0033',
+        color: '#ff66cc'
+      });
+      return;
+    }
+
     const token = localStorage.getItem('token');
-    
     const result = await Swal.fire({
-      title: 'คุณแน่ใจหรือไม่?',
-      text: 'คุณต้องการลบผู้ใช้นี้ใช่หรือไม่?',
+      title: 'ยืนยันการลบ?',
+      text: 'บัญชีของคุณจะถูกลบออกจากระบบอย่างถาวร',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#7b3fe4',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'ใช่ ลบเลย!',
+      confirmButtonText: 'ยืนยัน, ลบเลย!',
       cancelButtonText: 'ยกเลิก',
       background: '#1b0033',
       color: '#f0e6ff',
@@ -71,38 +100,39 @@ export default function UserPage() {
     if (!result.isConfirmed) return;
 
     try {
-      // แก้ไข: เปลี่ยนมาใช้ API Proxy ภายใน (/api/users) แทนการยิงตรงไปหลังบ้าน
       const res = await fetch(`/api/users?id=${id}`, { 
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (res.ok) {
-        setItems(items.filter((u) => u.id !== id));
         Swal.fire({
           icon: 'success',
           title: 'ลบสำเร็จ!',
-          text: 'ผู้ใช้ถูกลบเรียบร้อยแล้ว.',
-          background: '#1b0033',
-          color: '#f0e6ff',
-          timer: 1500,
+          text: 'ระบบกำลังนำคุณออกจากระบบ...',
+          timer: 2000,
           showConfirmButton: false,
+        }).then(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('username');
+          router.push('/Login');
         });
       } else {
-        const errorData = await res.json();
-        Swal.fire('ลบไม่สำเร็จ', errorData.error || 'เกิดข้อผิดพลาด', 'error');
+        Swal.fire('Error', 'ไม่สามารถลบข้อมูลได้', 'error');
       }
     } catch (error) {
-      Swal.fire('ลบไม่สำเร็จ', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+      Swal.fire('Error', 'การเชื่อมต่อขัดข้อง', 'error');
     }
   }
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <h1 style={{ color: '#7b3fe4' }}>Loading...</h1>
+      <div className="loading-screen">
+        <h1 className="glow-text">LOADING...</h1>
+        <style jsx>{`
+          .loading-screen { height: 100vh; display: flex; justify-content: center; align-items: center; background: #0a001a; }
+          .glow-text { color: #7b3fe4; text-shadow: 0 0 20px #7b3fe4; font-family: 'Orbitron', sans-serif; }
+        `}</style>
       </div>
     );
   }
@@ -111,164 +141,66 @@ export default function UserPage() {
     <>
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
-
-        .container {
-          min-height: 100vh;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 40px 20px;
-          font-family: 'Orbitron', sans-serif;
-        }
-
-        .card {
-          width: 100%;
-          max-width: 1200px;
-          background: linear-gradient(145deg, #220044, #110022);
-          border-radius: 20px;
-          box-shadow: 0 0 20px #7b3fe4aa, 0 0 30px #220033 inset;
-          padding: 24px;
-          color: #d3bfff;
-          border: 2px solid #7b3fe4;
-        }
-
-        .card-header {
-          font-size: 1.8rem;
-          font-weight: 700;
-          color: #f9e8ff;
-          padding-bottom: 14px;
-          margin-bottom: 20px;
-          border-bottom: 2px solid #a66fff;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        table {
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0 6px;
-          color: #e0c9ff;
-          font-size: 0.8rem;
-        }
-
-        thead tr {
-          background-color: #330066;
-        }
-
-        thead th {
-          padding: 8px;
-          text-align: center;
-          font-weight: 600;
-        }
-
-        tbody tr {
-          background: #1c0033;
-          border-radius: 6px;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        tbody tr:hover {
-          transform: scale(1.005);
-          box-shadow: 0 0 8px #9c6cffaa;
-        }
-
-        tbody td {
-          padding: 8px;
-          vertical-align: middle;
-          text-align: center;
-        }
-
-        .btn-purple,
-        .btn-danger {
-          padding: 5px 10px;
-          font-weight: 600;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-size: 0.75rem;
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .btn-purple { background-color: #7b3fe4; color: white; }
-        .btn-purple:hover { background-color: #9c6cff; transform: translateY(-1px); }
-
-        .btn-danger { background-color: #cc3399; color: white; }
-        .btn-danger:hover { background-color: #ff66cc; transform: translateY(-1px); }
-
-        .no-data {
-          text-align: center;
-          padding: 20px;
-          font-style: italic;
-          color: #a68aff99;
-        }
+        .container { min-height: 100vh; display: flex; justify-content: center; padding: 60px 20px; font-family: 'Orbitron', sans-serif; background: #0a001a; }
+        .card { width: 100%; max-width: 1200px; background: rgba(20, 0, 40, 0.9); border-radius: 15px; box-shadow: 0 0 25px #7b3fe4; padding: 30px; border: 1px solid #7b3fe4; }
+        .card-header { font-size: 2rem; color: #fff; margin-bottom: 30px; text-shadow: 0 0 10px #ff66cc; border-bottom: 2px solid #ff66cc; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        thead th { color: #ffcc00; padding: 15px; text-align: center; background: #220044; text-transform: uppercase; }
+        tbody tr { background: rgba(50, 0, 100, 0.5); transition: 0.3s; }
+        tbody tr.is-me { border-left: 5px solid #ffcc00; background: rgba(100, 0, 200, 0.4); }
+        tbody td { padding: 12px; text-align: center; color: #d3bfff; font-size: 0.9rem; }
+        .btn-edit { background: #ffcc00; color: #000; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 8px; transition: 0.2s; }
+        .btn-edit:hover { background: #fff; transform: translateY(-2px); }
+        .btn-delete { background: #ff0055; color: #fff; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-delete:hover { background: #ff66aa; transform: translateY(-2px); }
+        .denied-text { color: #555; font-size: 0.8rem; font-style: italic; letter-spacing: 1px; }
       `}</style>
 
       <div className="container">
         <div className="card">
-          <div className="card-header">
-            <i className="bi bi-people-fill"></i> รายชื่อผู้ใช้งาน
-          </div>
-          <div className="card-body">
-            <div className="table-responsive">
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Firstname</th>
-                    <th>Fullname</th>
-                    <th>Lastname</th>
-                    <th>Username</th>
-                    <th>Address</th>
-                    <th>Sex</th>
-                    <th>Birthday</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.length > 0 ? (
-                    items.map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
-                        <td>{item.firstname}</td>
-                        <td>{item.fullname}</td>
-                        <td>{item.lastname}</td>
+          <div className="card-header">USER DATABASE SYSTEM</div>
+          <div style={{ overflowX: 'auto' }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>USERNAME</th>
+                  <th>FIRSTNAME</th>
+                  <th>LASTNAME</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.length > 0 ? (
+                  items.map((item) => {
+                    // ตรวจสอบว่า ID แถวนี้คือ ID ของเราหรือไม่
+                    const isMe = currentUserId && item.id.toString() === currentUserId;
+                    return (
+                      <tr key={item.id} className={isMe ? 'is-me' : ''}>
+                        <td>{item.id} {isMe && "⭐"}</td>
                         <td>{item.username}</td>
-                        <td>{item.address}</td>
-                        <td>{item.sex}</td>
-                        <td>{item.birthday}</td>
+                        <td>{item.firstname}</td>
+                        <td>{item.lastname}</td>
                         <td>
-                          <Link href={`/admin/users/edit/${item.id}`}>
-                            <button className="btn-purple" type="button">
-                              <i className="bi bi-pencil-fill"></i> Edit
-                            </button>
-                          </Link>
-                        </td>
-                        <td>
-                          <button
-                            className="btn-danger"
-                            onClick={() => handleDelete(item.id)}
-                            type="button"
-                          >
-                            <i className="bi bi-trash-fill"></i> Delete
-                          </button>
+                          {isMe ? (
+                            <>
+                              <Link href={`/admin/users/edit/${item.id}`}>
+                                <button className="btn-edit">Edit</button>
+                              </Link>
+                              <button className="btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
+                            </>
+                          ) : (
+                            <span className="denied-text">ACCESS DENIED</span>
+                          )}
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="10" className="no-data">
-                        ไม่พบข้อมูลผู้ใช้งาน
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    );
+                  })
+                ) : (
+                  <tr><td colSpan="5">No users found in database.</td></tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

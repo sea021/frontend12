@@ -24,10 +24,15 @@ export default function Login() {
       const data = await res.json();
 
       if (data.token) {
+        // --- ส่วนที่แก้ไข: เก็บข้อมูลลง LocalStorage ---
         localStorage.setItem('token', data.token);
+        
+        // เพิ่มบรรทัดนี้เพื่อให้หน้า User Table รู้ว่าเราคือใคร (เช่น shogun123)
+        localStorage.setItem('username', username); 
 
         Swal.fire({
           title: 'Login Successfully!',
+          text: `Welcome, ${username}`,
           icon: 'success',
           showConfirmButton: false,
           timer: 1500,
@@ -40,13 +45,14 @@ export default function Login() {
 
         setAnimateOut(true);
         setTimeout(() => {
-          // Redirect ด้วย window.location.href
+          // ใช้ window.location.href เพื่อล้างค่า Cache และโหลดหน้าใหม่พร้อมสิทธิ์ที่ถูกต้อง
           window.location.href = '/admin/users';
         }, 600);
 
       } else {
         Swal.fire({
           title: 'Login Failed!',
+          text: data.message || 'Invalid username or password',
           icon: 'error',
           showConfirmButton: false,
           timer: 1500,
@@ -110,7 +116,7 @@ export default function Login() {
           </button>
 
           <div className="login-links">
-            <Link href="/forgot-password" className="link-cyberpunk">
+            <Link href="/forgot-password" size="small" className="link-cyberpunk">
               ลืมรหัสผ่าน?
             </Link>
             <span className="divider"> | </span>
@@ -132,7 +138,7 @@ export default function Login() {
           display: flex;
           justify-content: center;
           align-items: center;
-          
+          background: #0a001a;
           font-family: 'Audiowide', sans-serif;
           padding: 2rem;
           box-sizing: border-box;
@@ -156,6 +162,7 @@ export default function Login() {
           text-align: center;
           transition: opacity 0.6s ease, transform 0.6s ease;
           margin-bottom: 2rem;
+          border: 1px solid #ff66ff;
         }
 
         .fade-float-out {
@@ -169,32 +176,35 @@ export default function Login() {
           text-shadow:
             0 0 8px #ff66cc,
             0 0 12px #cc33ff;
+          text-transform: uppercase;
         }
 
         label {
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           text-align: left;
           color: #d9b3ff;
-          margin-bottom: 0.3rem;
+          margin-bottom: -0.8rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         input[type="text"],
         input[type="password"] {
-          padding: 0.5rem 1rem;
+          padding: 0.8rem 1rem;
           border-radius: 6px;
           border: 2px solid #cc33ff;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
           color: #fff;
           font-size: 1rem;
-          transition: border-color 0.3s;
+          transition: 0.3s;
           outline: none;
         }
 
         input[type="text"]:focus,
         input[type="password"]:focus {
           border-color: #ff66ff;
-          box-shadow: 0 0 8px #ff66ff;
-          background: rgba(255, 255, 255, 0.15);
+          box-shadow: 0 0 12px #ff66ff;
+          background: rgba(255, 255, 255, 0.1);
         }
 
         .btn-login {
@@ -204,101 +214,59 @@ export default function Login() {
           border-radius: 8px;
           color: white;
           font-weight: bold;
-          padding: 0.6rem 1.2rem;
+          padding: 0.8rem 1.2rem;
           cursor: pointer;
-          font-size: 1.1rem;
+          font-size: 1rem;
           text-transform: uppercase;
-          letter-spacing: 1px;
+          letter-spacing: 2px;
           box-shadow: 0 0 12px #cc33ff;
-          transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+          transition: 0.3s;
         }
 
         .btn-login:hover {
           background: linear-gradient(90deg, #ff33cc, #9933ff);
           box-shadow: 0 0 20px #ff33cc;
-          transform: scale(1.05);
+          transform: translateY(-2px);
         }
 
         .btn-login:disabled {
-          background: #888;
+          background: #444;
           cursor: not-allowed;
           box-shadow: none;
         }
 
         .login-links {
-          margin-top: 1rem;
-          font-size: 0.95rem;
+          margin-top: 0.5rem;
+          font-size: 0.85rem;
           display: flex;
           justify-content: center;
           gap: 0.8rem;
         }
 
         .link-cyberpunk {
-          position: relative;
           color: #ff33cc;
           text-decoration: none;
-          font-weight: bold;
-          text-shadow: 0 0 6px #ff33cc, 0 0 12px #cc33ff;
           transition: 0.3s;
-        }
-
-        .link-cyberpunk::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          transform: scaleX(0);
-          height: 2px;
-          bottom: -2px;
-          left: 0;
-          background: #ff66ff;
-          transform-origin: bottom right;
-          transition: transform 0.3s ease-out;
         }
 
         .link-cyberpunk:hover {
           color: #ff66ff;
-          text-shadow: 0 0 12px #ff66ff, 0 0 24px #cc33ff;
-        }
-
-        .link-cyberpunk:hover::after {
-          transform: scaleX(1);
-          transform-origin: bottom left;
+          text-shadow: 0 0 10px #ff66ff;
         }
 
         .divider {
-          color: #d9b3ff;
-          text-shadow: 0 0 6px #cc33ff;
+          color: #444;
         }
 
         .footer {
-          text-align: center;
-          padding: 1.5rem 1rem;
-          color: #fff;
-          font-family: 'Audiowide', monospace;
-          font-size: 0.9rem;
-          text-shadow: 0 0 8px #cc33ff, 0 0 20px #9933ff;
-          user-select: none;
-          letter-spacing: 0.05em;
-          margin-top: 3rem;
-          border-radius: 0 0 12px 12px;
-        }
-
-        .swal2-show-cyberpunk {
-          animation: glowPulse 1.2s ease-in-out infinite alternate !important;
-          border: 2px solid #ff33cc !important;
-          box-shadow: 0 0 30px #ff66ff, inset 0 0 20px #cc33ff !important;
-          color: #ff66cc !important;
-          font-family: 'Audiowide', monospace !important;
-        }
-
-        .swal2-hide-cyberpunk {
-          opacity: 0 !important;
+          color: #555;
+          font-size: 0.7rem;
+          letter-spacing: 1px;
         }
 
         @keyframes glowPulse {
-          0% { text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff; }
-          50% { text-shadow: 0 0 16px #ff66ff, 0 0 32px #cc33ff; }
-          100% { text-shadow: 0 0 24px #ff33cc, 0 0 48px #ff66ff; }
+          0% { text-shadow: 0 0 8px #ff66cc; }
+          100% { text-shadow: 0 0 20px #ff33cc; }
         }
       `}</style>
 

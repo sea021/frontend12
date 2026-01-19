@@ -8,17 +8,20 @@ export default function Navbar() {
   const router = useRouter();
   const [tokenState, setToken] = useState('');
 
+  // ตรวจสอบ Token เมื่อ Component เริ่มทำงาน
   useEffect(() => {
     const token = localStorage.getItem('token');
     setToken(token);
   }, []);
 
+  // ฟังก์ชันออกจากระบบ
   const handleSignOut = () => {
     localStorage.removeItem('token');
     setToken(null);
     router.push('/Login');
   };
 
+  // จัดการการปิดเมนู Bootstrap เมื่อคลิกลิงก์ (สำหรับ Mobile)
   useEffect(() => {
     import('bootstrap/dist/js/bootstrap.bundle.min.js').then(({ default: bootstrap }) => {
       const navLinks = document.querySelectorAll('.navbar-nav .nav-item .btn, .navbar-nav .nav-item .nav-link');
@@ -31,9 +34,6 @@ export default function Navbar() {
           }
         });
       });
-      return () => {
-        navLinks.forEach(link => link.removeEventListener('click', () => {}));
-      };
     });
   }, []);
 
@@ -81,6 +81,16 @@ export default function Navbar() {
               <li className="nav-item">
                 <Link className="btn btn-cyber text-white" href="/">Home</Link>
               </li>
+
+              {/* ปุ่มตารางผู้ใช้: จะแสดงเฉพาะเมื่อมี tokenState เท่านั้น */}
+              {tokenState && (
+                <li className="nav-item">
+                  <Link className="btn btn-admin-gold text-white" href="/admin/users">
+                    User Table
+                  </Link>
+                </li>
+              )}
+
               <li className="nav-item">
                 <Link className="btn btn-cyber text-white" href="/about">About</Link>
               </li>
@@ -90,6 +100,7 @@ export default function Navbar() {
               <li className="nav-item">
                 <Link className="btn btn-cyber text-white" href="/contact">Contact</Link>
               </li>
+              
               <li className="nav-item">
                 {tokenState ? (
                   <button onClick={handleSignOut} className="btn btn-login-glow text-white">SignOut</button>
@@ -102,7 +113,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Style */}
+      {/* CSS Styles */}
       <style jsx>{`
         .video-bg-wrapper {
           position: fixed;
@@ -129,6 +140,28 @@ export default function Navbar() {
           box-shadow: 0 0 25px #cc66ff;
           animation: fadeIn 1.5s ease-in-out;
         }
+
+        /* ปุ่มใหม่: สไตล์สีทองสำหรับ Admin */
+        .btn-admin-gold {
+          background: linear-gradient(90deg, #ffcc00, #ff9900);
+          color: #000 !important;
+          font-weight: 800;
+          padding: 0.35rem 1rem;
+          border: none;
+          border-radius: 8px;
+          box-shadow: 0 0 15px #ffcc00;
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-size: 0.9rem;
+        }
+        .btn-admin-gold:hover {
+          transform: scale(1.1);
+          box-shadow: 0 0 25px #ffcc00, 0 0 35px #ffffff;
+          background: #ffffff;
+          color: #000 !important;
+        }
+
         @keyframes fadeIn {
           0% { opacity:0; transform: translateY(-20px);}
           100% { opacity:1; transform: translateY(0);}
@@ -141,24 +174,15 @@ export default function Navbar() {
         .logo-image { transition: transform 0.6s ease; }
         .logo-image:hover { transform: rotate(360deg) scale(1.1); }
 
-        @media (min-width: 768px) {
-          .logo-wrapper { width: 70px; height: 70px; }
-          .brand-text-glow { font-size: 1.4rem; }
-        }
-        @media (min-width: 1200px) {
-          .logo-wrapper { width: 80px; height: 80px; }
-          .brand-text-glow { font-size: 1.5rem; }
-        }
-
         .brand-text-glow {
           font-weight: 700;
           color: #ff66cc;
           animation: glowPulse 2.5s infinite alternate;
-          text-shadow: 0 0 8px #ff66cc,0 0 16px #cc33ff;
+          text-shadow: 0 0 8px #ff66cc, 0 0 16px #cc33ff;
         }
         @keyframes glowPulse {
-          0% { text-shadow:0 0 8px #ff66cc,0 0 16px #cc33ff;}
-          100% { text-shadow:0 0 20px #ff66ff,0 0 30px #cc33ff;}
+          0% { text-shadow:0 0 8px #ff66cc, 0 0 16px #cc33ff;}
+          100% { text-shadow:0 0 20px #ff66ff, 0 0 30px #cc33ff;}
         }
 
         .btn-cyber {
@@ -177,7 +201,7 @@ export default function Navbar() {
         .btn-cyber:hover {
           background: linear-gradient(90deg, #ff33cc, #9933ff);
           transform: scale(1.05) translateY(-1px);
-          box-shadow: 0 0 20px #ff66ff,0 0 25px #cc33ff;
+          box-shadow: 0 0 20px #ff66ff, 0 0 25px #cc33ff;
         }
 
         .btn-login-glow {
@@ -200,7 +224,7 @@ export default function Navbar() {
           position: absolute;
           top:-50%; left:-50%;
           width:200%; height:200%;
-          background: conic-gradient(from 0deg, #ff66cc,#cc33ff,#9933ff,#ff66cc);
+          background: conic-gradient(from 0deg, #ff66cc, #cc33ff, #9933ff, #ff66cc);
           animation: rotateGlow 5s linear infinite;
           z-index:-1;
           filter: blur(12px);
@@ -210,11 +234,15 @@ export default function Navbar() {
           background: #ff66cc;
           color: #fff !important;
           transform: scale(1.05);
-          box-shadow: 0 0 25px #ff99ff,0 0 35px #cc33ff,0 0 50px #ff66cc;
+          box-shadow: 0 0 25px #ff99ff, 0 0 35px #cc33ff, 0 0 50px #ff66cc;
         }
         @keyframes rotateGlow {
           0% { transform: rotate(0deg);}
           100% { transform: rotate(360deg);}
+        }
+
+        @media (max-width: 991px) {
+          .navbar-nav { background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 15px; }
         }
       `}</style>
 

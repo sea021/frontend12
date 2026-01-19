@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 
-// GET: ดึงข้อมูลผู้ใช้ 1 คนมาแสดงในฟอร์ม
+// ==========================================================
+// GET: ดึงข้อมูลผู้ใช้ 1 คน (เช็คสิทธิ์ก่อนแสดงหน้าแก้ไข)
+// ==========================================================
 export async function GET(request, { params }) {
   try {
-    // สำหรับ Next.js 15 ต้อง await params ก่อนดึงค่า id
     const { id } = await params; 
     const authHeader = request.headers.get('authorization');
 
-    // แก้ไขจุดนี้: เปลี่ยนจาก /user/ เป็น /users/ (เติม s) ให้ตรงกับ Backend
     const res = await fetch(`https://backend-mauve-iota-64.vercel.app/api/users/${id}`, {
       method: 'GET',
       headers: {
@@ -17,26 +17,55 @@ export async function GET(request, { params }) {
       cache: 'no-store',
     });
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      return NextResponse.json({ error: errorData.error || 'ไม่พบผู้ใช้' }, { status: res.status });
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      const data = await res.json();
+      if (!res.ok) {
+        return NextResponse.json({ error: data.error || 'Backend Error' }, { status: res.status });
+      }
+      return NextResponse.json(data);
+    } else {
+      const text = await res.text();
+      return NextResponse.json({ error: 'Backend did not return JSON', details: text }, { status: res.status });
     }
 
-    const data = await res.json();
-    return NextResponse.json(data);
   } catch (error) {
     console.error("GET Error:", error);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-// PUT: ส่งข้อมูลที่แก้ไขแล้วกลับไปบันทึก
+// ==========================================================
+// PUT: แก้ไขข้อมูล (จำกัดให้แก้ได้เฉพาะตัวเองเท่านั้น)
+// ==========================================================
 export async function PUT(request, { params }) {
   try {
-    const { id } = await params; // await params สำหรับ Next.js 15
+    const { id } = await params; // ID จาก URL (เป้าหมายที่จะแก้)
     const authHeader = request.headers.get('authorization');
     const body = await request.json();
 
+    // 1. ดึงข้อมูลโปรไฟล์ของคนที่ถือ Token นี้อยู่ปัจจุบัน
+    const profileRes = await fetch(`https://backend-mauve-iota-64.vercel.app/api/profile`, {
+      method: 'GET',
+      headers: { 'Authorization': authHeader || '' },
+    });
+
+    if (!profileRes.ok) {
+      return NextResponse.json({ error: 'ยืนยันตัวตนล้มเหลว กรุณา Login ใหม่' }, { status: 401 });
+    }
+
+    const currentUser = await profileRes.json();
+
+    // 2. ตรวจสอบว่า ID ที่จะแก้ ตรงกับ ID ของคนที่ Login อยู่จริงไหม
+    // เทียบ currentUser.id (คนแก้) กับ id (เป้าหมาย)
+    if (currentUser.id.toString() !== id.toString()) {
+      return NextResponse.json(
+        { error: 'คุณไม่มีสิทธิ์แก้ไขข้อมูลของผู้อื่น' }, 
+        { status: 403 }
+      );
+    }
+
+    // 3. ถ้าผ่านเงื่อนไข ให้ส่งคำขอไปยัง Backend Vercel
     const res = await fetch(`https://backend-mauve-iota-64.vercel.app/api/users/${id}`, {
       method: 'PUT',
       headers: {
@@ -46,14 +75,19 @@ export async function PUT(request, { params }) {
       body: JSON.stringify(body),
     });
 
-    const data = await res.json();
-    if (res.ok) {
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      const data = await res.json();
+      if (!res.ok) {
+        return NextResponse.json({ error: data.error || 'Update Failed' }, { status: res.status });
+      }
       return NextResponse.json(data);
     } else {
-      return NextResponse.json({ error: data.error || 'แก้ไขไม่สำเร็จ' }, { status: res.status });
+      const text = await res.text();
+      return NextResponse.json({ error: 'Backend error', details: text }, { status: res.status });
     }
   } catch (error) {
     console.error("PUT Error:", error);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
