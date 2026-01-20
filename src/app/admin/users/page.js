@@ -8,14 +8,15 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 export default function UserPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // State สำหรับเก็บ ID และ Status ของคนที่ Login อยู่
   const [currentUserId, setCurrentUserId] = useState(null); 
+  const [currentUserStatus, setCurrentUserStatus] = useState(null); 
+  
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    
-    // --- จุดแก้ไขสำคัญ: ดึง Username จาก localStorage ที่เก็บไว้ตอน Login จริง ---
-    // หากไม่มีค่าใน localStorage จะเป็น null (ทำให้แก้ไขคนอื่นไม่ได้โดยพลการ)
     const loggedInUsername = localStorage.getItem('username'); 
 
     if (!token) {
@@ -30,7 +31,6 @@ export default function UserPage() {
           'Content-Type': 'application/json'
         };
 
-        // ดึงรายชื่อผู้ใช้ทั้งหมด
         const res = await fetch('/api/users', { 
           method: 'GET', 
           headers: headers 
@@ -48,12 +48,12 @@ export default function UserPage() {
         const data = await res.json();
         setItems(data);
 
-        // ค้นหา ID ของเราจากรายการผู้ใช้ โดยเทียบกับ Username ที่ Login เข้ามาจริง
+        // หาตัวตนของคนที่ Login เข้ามาเพื่อเก็บ ID และ Status
         if (loggedInUsername) {
           const me = data.find(user => user.username === loggedInUsername);
           if (me) {
             setCurrentUserId(me.id.toString());
-            console.log("System: Logged in as ID", me.id, `(${loggedInUsername})`);
+            setCurrentUserStatus(me.status); // เก็บ Status (admin/user)
           }
         }
 
@@ -65,14 +65,17 @@ export default function UserPage() {
     }
 
     fetchData();
-    // ตั้งเวลา Refresh ข้อมูลทุก 5 วินาที
+    // Refresh ข้อมูลทุก 5 วินาที
     const interval = setInterval(fetchData, 5000); 
     return () => clearInterval(interval);
   }, [router]);
 
   async function handleDelete(id) {
-    // ป้องกันความปลอดภัยหน้าบ้าน: เช็คว่า ID ที่จะลบคือ ID ของตัวเองหรือไม่
-    if (currentUserId?.toString() !== id.toString()) {
+    // 1. เช็คสิทธิ์: เป็นตัวเอง หรือ เป็น Admin ถึงจะลบได้
+    const isMe = currentUserId?.toString() === id.toString();
+    const isAdmin = currentUserStatus === 'admin';
+
+    if (!isMe && !isAdmin) {
       Swal.fire({
         icon: 'error',
         title: 'Access Denied',
@@ -84,9 +87,15 @@ export default function UserPage() {
     }
 
     const token = localStorage.getItem('token');
+    
+    // ข้อความแจ้งเตือนที่แตกต่างกัน
+    const warningText = isMe 
+      ? 'บัญชีของคุณจะถูกลบออกจากระบบอย่างถาวร และคุณจะถูก Log out'
+      : `คุณต้องการลบผู้ใช้ ID: ${id} ใช่หรือไม่?`;
+
     const result = await Swal.fire({
       title: 'ยืนยันการลบ?',
-      text: 'บัญชีของคุณจะถูกลบออกจากระบบอย่างถาวร',
+      text: warningText,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#7b3fe4',
@@ -100,6 +109,7 @@ export default function UserPage() {
     if (!result.isConfirmed) return;
 
     try {
+      // ✅ แก้ไข URL ตรงนี้: ใช้ ?id= แทน /id เพื่อแก้ปัญหา 405 Method Not Allowed
       const res = await fetch(`/api/users?id=${id}`, { 
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
@@ -109,18 +119,27 @@ export default function UserPage() {
         Swal.fire({
           icon: 'success',
           title: 'ลบสำเร็จ!',
-          text: 'ระบบกำลังนำคุณออกจากระบบ...',
+          text: 'ดำเนินการเรียบร้อยแล้ว',
           timer: 2000,
           showConfirmButton: false,
         }).then(() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('username');
-          router.push('/Login');
+          // ถ้าลบตัวเอง ให้ Logout
+          if (isMe) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            router.push('/Login');
+          } else {
+            // ถ้า Admin ลบคนอื่น ให้เอาออกจาก List ทันที
+            setItems(prev => prev.filter(item => item.id !== id));
+          }
         });
       } else {
-        Swal.fire('Error', 'ไม่สามารถลบข้อมูลได้', 'error');
+        // อ่าน Error message จาก backend ถ้ามี
+        const errorData = await res.json().catch(() => ({}));
+        Swal.fire('Error', errorData.message || 'ไม่สามารถลบข้อมูลได้', 'error');
       }
     } catch (error) {
+      console.error(error);
       Swal.fire('Error', 'การเชื่อมต่อขัดข้อง', 'error');
     }
   }
@@ -154,11 +173,15 @@ export default function UserPage() {
         .btn-delete { background: #ff0055; color: #fff; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-delete:hover { background: #ff66aa; transform: translateY(-2px); }
         .denied-text { color: #555; font-size: 0.8rem; font-style: italic; letter-spacing: 1px; }
+        .badge-admin { background: #7b3fe4; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; vertical-align: middle;}
       `}</style>
 
       <div className="container">
         <div className="card">
-          <div className="card-header">USER DATABASE SYSTEM</div>
+          <div className="card-header">
+             USER DATABASE SYSTEM 
+             {currentUserStatus === 'admin' && <span style={{fontSize:'1rem', marginLeft:'10px', color:'#00ff00'}}>(ADMIN MODE)</span>}
+          </div>
           <div style={{ overflowX: 'auto' }}>
             <table>
               <thead>
@@ -167,14 +190,18 @@ export default function UserPage() {
                   <th>USERNAME</th>
                   <th>FIRSTNAME</th>
                   <th>LASTNAME</th>
+                  <th>STATUS</th>
                   <th>ACTION</th>
                 </tr>
               </thead>
               <tbody>
                 {items.length > 0 ? (
                   items.map((item) => {
-                    // ตรวจสอบว่า ID แถวนี้คือ ID ของเราหรือไม่
+                    // ตรวจสอบเงื่อนไขการแสดงปุ่ม
                     const isMe = currentUserId && item.id.toString() === currentUserId;
+                    const isAdmin = currentUserStatus === 'admin';
+                    const canEdit = isMe || isAdmin;
+
                     return (
                       <tr key={item.id} className={isMe ? 'is-me' : ''}>
                         <td>{item.id} {isMe && "⭐"}</td>
@@ -182,7 +209,11 @@ export default function UserPage() {
                         <td>{item.firstname}</td>
                         <td>{item.lastname}</td>
                         <td>
-                          {isMe ? (
+                          {item.status} 
+                          {item.status === 'admin' && <span className="badge-admin">ADM</span>}
+                        </td>
+                        <td>
+                          {canEdit ? (
                             <>
                               <Link href={`/admin/users/edit/${item.id}`}>
                                 <button className="btn-edit">Edit</button>
@@ -197,7 +228,7 @@ export default function UserPage() {
                     );
                   })
                 ) : (
-                  <tr><td colSpan="5">No users found in database.</td></tr>
+                  <tr><td colSpan="6">No users found in database.</td></tr>
                 )}
               </tbody>
             </table>

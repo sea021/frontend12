@@ -11,20 +11,24 @@ export default function EditUserPage() {
   });
   const [loaded, setLoaded] = useState(false);
 
+  // 1. ดึงข้อมูลเก่ามาแสดง (ส่วนนี้ของคุณทำงานได้แล้ว ผมคงไว้เหมือนเดิม)
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) return router.push('/Login');
+    if (!token) {
+      router.push('/Login');
+      return;
+    }
 
     async function getUser() {
       try {
-        const res = await fetch(`/api/users/${id}`, {
+        // ใช้ URL เดิมสำหรับการดึงข้อมูล (เพราะดูเหมือน GET จะทำงานได้ปกติ)
+       const res = await fetch(`/api/users?id=${id}`, { // ✅ ถูกต้อง ตรงกับ Backend ใหม่
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        if (!res.ok) throw new Error();
+        if (!res.ok) throw new Error('Failed to fetch user');
         
         const data = await res.json();
-        // จัดการกรณีข้อมูลเป็น Array หรือ Object
         const user = Array.isArray(data) ? data[0] : data;
         
         if (!user) throw new Error('User not found');
@@ -34,10 +38,11 @@ export default function EditUserPage() {
             lastname: user.lastname || '',
             fullname: user.fullname || '',
             username: user.username || '',
-            password: '' // เว้นว่างไว้เพื่อความปลอดภัย
+            password: '' // เว้นว่างไว้เสมอเพื่อความปลอดภัย
         });
         setLoaded(true);
       } catch (error) {
+        console.error("Fetch error:", error);
         Swal.fire({
           icon: 'error',
           title: 'ไม่พบข้อมูลผู้ใช้',
@@ -55,19 +60,28 @@ export default function EditUserPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // 2. ฟังก์ชันบันทึกข้อมูล (จุดที่แก้ไข)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     
-    // แสดง Loading ระหว่างบันทึก
+    // เช็คความปลอดภัยเบื้องต้น
+    if (!token) {
+        Swal.fire('Error', 'Session หมดอายุ กรุณา Login ใหม่', 'error');
+        router.push('/Login');
+        return;
+    }
+    
     Swal.showLoading();
 
     try {
-      const res = await fetch(`/api/users/${id}`, {
+      // ⚠️ แก้ไข URL: เปลี่ยนเป็น Query Param (?id=) เพื่อแก้ปัญหา 401/405
+      // ระบบน่าจะรองรับ PUT ที่ URL เดียวกับ DELETE
+      const res = await fetch(`/api/users?id=${id}`, { 
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${token}` 
+          'Authorization': `Bearer ${token}` // ✅ ส่ง Token ยืนยันตัวตน
         },
         body: JSON.stringify(formData)
       });
@@ -82,10 +96,19 @@ export default function EditUserPage() {
           showConfirmButton: false
         }).then(() => router.push('/admin/users'));
       } else {
-        throw new Error('Update failed');
+        // พยายามอ่าน Error จาก Server
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `Update failed (Status: ${res.status})`);
       }
     } catch (error) {
-      Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+      console.error("Update error:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'บันทึกไม่สำเร็จ',
+        text: 'เกิดข้อผิดพลาดในการเชื่อมต่อหรือคุณไม่มีสิทธิ์แก้ไข',
+        background: '#1a001a', 
+        color: '#ff66cc'
+      });
     }
   };
 
